@@ -1,0 +1,70 @@
+Installation
+
+This Gromacs_LS code is based on Gromacs version 4.5.5. While the vanilla 4.5.5
+version can be compiled using both the autoconf tools and CMake, the custom
+Gromacs_LS version can only be compiled with CMake.
+
+External requirements: fftw3, lapack
+
+You will need to install a recent version of the FFTW library (in double
+precision and as shared library), CMake, and lapack (http://www.netlib.org/lapack).
+The lapack library needs to be installed as a shared library (.so). Compiling
+lapack with the autoconf tools can be hassle, but recent versions can be
+easily compiled and installed with CMake.
+
+$> tar -zxvf lapack-3.5.0.tgz
+$> cd lapack-3.5.0
+$> mkdir build
+$> cd build
+$> ccmake ../
+
+Once the ccmake dialog comes up, press c to begin the initial configuration.
+Change the BUILD_SHARED_LIBS flag to ON and modify the CMAKE_INSTALL_PREFIX
+variable to set the target installation directory. After ccmake quits, you can
+follow the standard linux installation commands of
+
+$> make
+$> make install
+
+If you install fftw3 and lapack with a linux distribution such as Ubuntu
+or Fedora, you will also need to install the development (header) packages.
+Now the installation of the custom Gromacs_LS package
+
+$> tar -zxvf gromacs-4.5.5-LS_5.0.tar.gz
+$> cd gromacs-4.5.5-LS_5.0
+$> mkdir build
+$> cd build
+$> ccmake ../
+
+If you have installed the FFTW library in a non-standard location (i.e. other
+than /usr/lib or /usr/local/lib), then before running ccmake you should export
+the variable FFTW3_ROOT_DIR, e.g.
+
+$> export FFTW3_ROOT_DIR=/path/to/fftw
+
+Once the ccmake dialog comes up, press c to begin the initial configuration,
+and then modify the CMAKE_INSTALL_PREFIX variable to set the target
+installation directory. Use the toggle feature of ccmake (press t) and check
+that the paths to the fftw and lapack libraries are correct.
+
+Do not modify other variables unless you KNOW what
+you are doing. By default, the code is compiled in double precision (this is
+absolutely necessary), it cannot be compiled with MPI or GPU support, and
+all programs have the suffix _LS. Press c again and then g to generate the
+necessary Makefiles.
+
+After ccmake quits, you can follow the standard linux installation commands of
+
+$> make
+$> make install
+
+
+In addition to the Gromacs_LS code, we have also included two python programs:
+
+LStensor.py and tensortools
+
+LStensor.py contains a number of modules that can be imported into other python
+programs for the analysis of the data produced with the Gromas_LS software. The
+tensortools utility provides an easy to use command line interface to most of
+the modules available in the LStensor.py file. These two files are installed
+along with the other Gromacs_LS files in the bin folder.

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "This version of GROMACS does not build correctly using the autoconf tools. You must use CMake instead."
