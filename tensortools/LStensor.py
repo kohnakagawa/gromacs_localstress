@@ -32,13 +32,13 @@
 # [5] N. C. Admal; E. B. Tadmor; J. Elast. 100, 63 (2010)
 #
 # Covariant Central Force Decomposition
-# [6] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; Submitted to PRL (2015)
+# [6] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; Examining the Mechanical Equilibrium of Microscopic Stresses in Molecular Simulations Phys. Rev. Lett. (2015)
 # [7] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; In preparation (2015)
 #
 # Goetz-Lipowsky Decomposition
 # [8] R. Goetz; R. Lipowsky; J. Chem. Phys. 108, 7397 (1998)
 #
-# Decomposition on geometric centers
+# Method of planes
 # [9] H. Heinz; W. Paul; K. Binder; Phys. Rev. E. 72 066704 (2005)
 
 try:

@@ -5,7 +5,7 @@
   Authors   : A. Torres-Sanchez and J. M. Vanegas
   Modified  :
   Purpose   : Compute the local stress from precomputed trajectories in GROMACS
-  Date      : 25/03/2015
+  Date      : 06/23/2015
   Version   :
   Changes   :
 
@@ -32,13 +32,13 @@
 // [5] N. C. Admal; E. B. Tadmor; J. Elast. 100, 63 (2010)
 //
 // Covariant Central Force Decomposition
-// [6] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; Submitted to PRL (2015)
+// [6] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; Examining the Mechanical Equilibrium of Microscopic Stresses in Molecular Simulations (2015)
 // [7] A. Torres-Sanchez; J. M. Vanegas; M. Arroyo; In preparation (2015)
 //
 // Goetz-Lipowsky Decomposition
 // [8] R. Goetz; R. Lipowsky; J. Chem. Phys. 108, 7397 (1998)
 //
-// Decomposition on geometric centers
+// Method of planes
 // [9] H. Heinz; W. Paul; K. Binder; Phys. Rev. E. 72 066704 (2005)
 
 #include "localstress.h"
@@ -52,7 +52,7 @@
 //----------------------------------------------------------------------------------------
 // gmxLS_distribute_stress
 //
-// ROOT OF ALL DEVIL
+// ROOT OF ALL EVIL
 // This function reads the gmxLS_locals_grid_t, the number of atoms, the atoms' labels and their
 // respective positions and forces, and calls the functions in charge of distributing the stress
 // on the grid depending on the local stress flags and the kind of interaction
@@ -592,7 +592,7 @@ void gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
     // Vector, we want to solve M*x = b
     real b[nRow3], s[nCol3];
 
-    //For GMC:
+    //For MOP:
     rvec Rcenter1, Rcenter2;
     rvec Fcenter1, Fcenter2;
     int j;
@@ -664,7 +664,7 @@ void gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         Fij[0] = (Fb[XX]-Fc[XX])/3.0; Fij[1] = (Fb[YY]-Fc[YY])/3.0; Fij[2] = (Fb[ZZ]-Fc[ZZ])/3.0;
         gmxLS_distribute_interaction(grid, Rb, Rc, Fij,0);
     }
-    else if (grid->fdecomp == enGMC)
+    else if (grid->fdecomp == enMOP)
     {
         double t;
         int skip;
@@ -831,7 +831,7 @@ void gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, 
     // Vector, we want to solve M*x = b
     real b[nRow3], s[nCol3];
 
-    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enGMC)
+    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enMOP)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -931,7 +931,7 @@ void gmxLS_spread_n4(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
     // Vector, we want to solve M*x = b
     real b[nRow4], s[nCol4];
 
-    //For GMC:
+    //For MOP:
     rvec Rcenter1, Rcenter2;
     rvec Fcenter1, Fcenter2;
     int j;
@@ -1029,7 +1029,7 @@ void gmxLS_spread_n4(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         Fij[0] = (Fc[XX]-Fd[XX])/4.0; Fij[1] = (Fc[YY]-Fd[YY])/4.0; Fij[2] = (Fc[ZZ]-Fd[ZZ])/4.0;
         gmxLS_distribute_interaction(grid, Rc, Rd, Fij,0);
     }
-    else if (grid->fdecomp == enGMC)
+    else if (grid->fdecomp == enMOP)
     {
         double t;
         int skip;
@@ -1639,9 +1639,9 @@ void gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         Fij[0] = (Fd[XX]-Fe[XX])/5.0; Fij[1] = (Fd[YY]-Fe[YY])/5.0; Fij[2] = (Fd[ZZ]-Fe[ZZ])/5.0;
         gmxLS_distribute_interaction(grid, Rd, Re, Fij,0);
     }
-    else if (grid->fdecomp == enGMC)
+    else if (grid->fdecomp == enMOP)
     {
-        printf("ERROR: 5-particle potentials (CMAP) for GMC haven't been programmed\n");
+        printf("ERROR: 5-particle potentials (CMAP) for MOP haven't been programmed\n");
         exit(1);
     }
 }

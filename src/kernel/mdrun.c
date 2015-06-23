@@ -63,12 +63,23 @@ int main(int argc,char *argv[])
   const char *desc[] = {
     "\n"
     "--------------------------------------------------------------------------------\n"
-    "Custom GROMACS version to compute the local stress tensor in 3D over a\n"
-    "simulation. This program computes the local stress based on the Hardy\n"
-    "stress definition (see Ch.8 in Tadmor & Miller (2011) Modeling Materials:\n"
-    "Continuum, Atomistic and Multiscale Techniques). It is also possible to \n"
-    "compute the virial stress per atom (J. Chem. Phys. 131, 154107 (2009)). We \n"
-    "have patched the GROMACS source code (v4.5.5) at various locations in \n"
+    "GROMACS-LS custom GROMACS version to compute the local stress tensor\n"
+    "in 3D for asimulation. This program computes the local stress based on\n"
+    "the Hardy stress definition (see Ch.8 in Tadmor & Miller (2011) Modeling\n"
+    "Materials: Continuum, Atomistic and Multiscale Techniques). It is also\n"
+    "possible to compute the virial stress per atom (J. Chem. Phys. 131,\n"
+    "154107 (2009)).\n\n"
+    "GROMACS-LS implements the local stress methodology outlined in\n"
+    "\n"
+    "J. M. Vanegas, A. Torres-Sanchez, and M. Arroyo, J. Chem. Theor.\n"
+    "Comput. 10, 691-702 (2014). Importance of Force Decomposition for Local\n"
+    "Stress Calculations in Biomembrane Molecular Simulations.\n\n"
+    "and in\n\n"
+    "A. Torres-Sanchez, J. M. Vanegas, M. Arroyo, Phys. Rev. Lett. (2015, in\n"
+    "press). Examining the Mechanical Equilibrium of Microscopic Stresses in\n"
+    "Molecular Simulations\n"
+    "\n"
+    "We have patched the GROMACS source code (v4.5.5) at various locations in \n"
     "the routines that calculate particles forces and velocities. Our patches rely\n"
     "heavily on the code structure and functions implemented in a previous local\n"
     "stress code (obtained from\n"
@@ -79,17 +90,7 @@ int main(int argc,char *argv[])
     "S. Ollila et al. Phys. Rev. Lett. 102, 078101 (2009). 3D Pressure Field in\n"
     "Lipid Membranes and Membrane-Protein Complexes.\n"
     "\n"
-    "In the current custom GROMACS version we implement the methodology outlined\n"
-    "in\n"
-    "\n"
-    "J. M. Vanegas, A. Torres-Sanchez, and M. Arroyo, J. Chem. Theor.\n"
-    "Comput. 10, 691-702 (2014). Importance of Force Decomposition for Local\n"
-    "Stress Calculations in Biomembrane Molecular Simulations.\n"
-    "and in\n"
-    "A. Torres-Sanchez, J. M. Vanegas, M. Arroyo, submitted to PRL (2015)\n"
-    "\n"
-    "The main differences of our implementation compared the previous one\n"
-    "include:\n"
+    "Some highlights of GROMACS-LS:\n"
     "\n"
     "- Decomposition of multi-body potential forces using:\n"
     "      1. Covariant central force decomposition (cCFD),\n"
@@ -98,18 +99,17 @@ int main(int argc,char *argv[])
     "         N. C. Admal and E. B. Tadmor; J. Elast. 100, 63-143, 2010\n"
     "      3. Goetz-Lipowsky decomposition (GLD)\n"
     "         R. Goetz and R. J. Lipowsky; J. Chem. Phys. 108, 7397-7409, 1998.\n"
-    "      4. Decomposition on geometric centers (GMC)\n"
-    "         H. Heinz; W. Paul; K. Binder; Phys. Rev. E. 72 066704 (2005)\n"
+    "      4. Method of planes (MOP)\n"
+    "         H. Heinz; W. Paul; K. Binder; Phys. Rev. E. 72 066704 (2005)\n\n"
     "The choice of decomposition can produce drastically different stress tensors\n"
     "due to the contributions from multibody potentials. Any flavour of the CFD\n"
     "always results in a symmetric stress tensor by definition (consistent with\n"
     "the continuum conservation of angular momentum), while GLD in general does\n"
     "not. See the text by Vanegas et al. and Torres-Sanchez et al. for more\n"
     "details. cCFD and nCFD differ in the treatment of 5-body body potentials\n"
-    "-CMAP- (see Torres-Sanchez et al.). The decomposition on geometry centers\n"
-    "does not satisfy balance of linear momentum and angular momentum (see Torres\n"
-    " -Sanchez et al.) and therefore its use is highly discouraged.\n"
-    "WE "
+    "-CMAP- (see Torres-Sanchez et al.). The method of planes\n"
+    "does not satisfy balance of linear momentum and angular momentum (see\n"
+    "Torres-Sanchez et al.) and it is included only for testing purposes.\n"
     "\n"
     "- Ability to output the total or individual contributions to the local\n"
     "stress such as those from vdw, electrostatics, angles, and others.\n"
@@ -129,8 +129,8 @@ int main(int argc,char *argv[])
     "using the virial stress per atom only for rapid visualization, as it\n" 
     "does not satisfy balance of linear momentum (see Torres-Sanchez et al.).\n"
     "\n"
-    "If you publish results using this code, we kindly ask you to cite both the\n"
-    "paper by Ollila et al. and by Vanegas et al.\n"
+    "If you publish results using this code, we kindly ask you to cite the papers\n"
+    "Vanegas et al., Torres-Sanchez et al., and by Ollila et al.\n"
     "\n"
     "Brief usage (see Local_stress.pdf file for more details):\n"
     "\n"
@@ -328,7 +328,7 @@ int main(int argc,char *argv[])
     { "-lscont", FALSE, etSTR, {&localsenum},
       "Select which contribution to write to output (default = all): all, vdw, coul, angles, bonds, dihp, dihi, dihrb, lincs, settle, shake, cmap, vel"},
     { "-lsfd", FALSE, etSTR, {&localsfdenum},
-      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), gld (Goetz-Lipowsky decomposition), or gmc (decomposition on geometric centers)"},
+      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), gld (Goetz-Lipowsky decomposition), or mop (method of planes)"},
     { "-lssa", FALSE, etSTR, {&localssanum},
       "Select the type of stress to calculate: spat (spatial stress from IKN theory, default), atom (stress per atom)"},
     { "-rerunvsite", FALSE, etBOOL, {&bRerunVSite},
@@ -421,8 +421,8 @@ int main(int argc,char *argv[])
   }else if(strncmp(localsfdenum,"gld",4) == 0){
     localsfdecomp = enGLD;
     printf("\nSelected force decomposition: %s\n", localsfdenum);
-  }else if(strncmp(localsfdenum,"gmc",4) == 0){
-    localsfdecomp = enGMC;
+  }else if(strncmp(localsfdenum,"mop",4) == 0){
+    localsfdecomp = enMOP;
     printf("\nSelected force decomposition: %s\n", localsfdenum);
   }else{
     printf("\nOption not recognized, will use covariant central force decomposition\n");
