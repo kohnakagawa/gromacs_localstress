@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  22 JUN 2015 20:25
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  21 AUG 2015 10:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -443,190 +443,197 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 45.
 (/usr/local/texlive/2013/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 53.
 
+LaTeX Font Warning: Font shape `OT1/cmss/m/it' in size <10> not available
+(Font)              Font shape `OT1/cmss/m/sl' tried instead on input line 49.
+
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 55.
 (/usr/local/texlive/2013/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Overfull \hbox (49.82832pt too wide) in paragraph at lines 53--54
+Overfull \hbox (49.82832pt too wide) in paragraph at lines 55--56
 \OT1/pcr/m/n/10 release-[]4-[]5-[]localpressure$[][] \OT1/cmss/m/n/10 and [][]$
 \OT1/pcr/m/n/10 ftp : / / ftp . gromacs . org / pub / tmp / gromacs-[]4 . 0 . 2
  _ localpressure .
  []
 
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 59.
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 61.
 
-LaTeX Font Info:    No file OMScmss.fd. on input line 59.
+LaTeX Font Info:    No file OMScmss.fd. on input line 61.
 
 LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
 (Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbullet' on input line 59.
+(Font)              for symbol `textbullet' on input line 61.
 
 [1
 
 {/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2]
-Overfull \hbox (4.43956pt too wide) in paragraph at lines 105--106
+Overfull \hbox (4.43956pt too wide) in paragraph at lines 107--108
 []\OT1/cmss/m/n/10 We now in-clude a util-ity called \OT1/pcr/m/n/10 tensortool
 s \OT1/cmss/m/n/10 which re-places the in-di-vid-ual c util-i-ties \OT1/pcr/m/n
 /10 bin2xvg\OT1/cmss/m/n/10 , \OT1/pcr/m/n/10 bin2ncdf\OT1/cmss/m/n/10 ,
  []
 
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 115.
+nput line 117.
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 115--115
+Overfull \hbox (6.0pt too wide) in paragraph at lines 117--117
 [][][][][][][] 
  []
 
 [3]
-Overfull \hbox (6.0pt too wide) in paragraph at lines 133--133
+Overfull \hbox (6.0pt too wide) in paragraph at lines 135--135
 [][][][][][][] 
  []
 
 
-Overfull \hbox (42.61192pt too wide) in paragraph at lines 141--142
+Overfull \hbox (42.61192pt too wide) in paragraph at lines 143--144
 []\OT1/cmss/m/n/10 Once the \OT1/pcr/m/n/10 ccmake \OT1/cmss/m/n/10 di-a-log co
 mes up, press c to be-gin the ini-tial con-fig-u-ra-tion, and then mod-ify the 
 \OT1/pcr/m/n/10 CMAKE[]INSTALL[]PREFIX
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 160--160
+Overfull \hbox (6.0pt too wide) in paragraph at lines 162--162
 [][][][][][][] 
  []
 
 [4]
 LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <8> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 174.
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 176.
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 174--174
+Overfull \hbox (6.0pt too wide) in paragraph at lines 176--176
 [][][][][][][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 186--187
+Underfull \hbox (badness 10000) in paragraph at lines 188--189
 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 191--191
+Overfull \hbox (6.0pt too wide) in paragraph at lines 193--193
 [][][][][][][] 
  []
 
 [5]
-Overfull \hbox (6.0pt too wide) in paragraph at lines 219--219
+Overfull \hbox (6.0pt too wide) in paragraph at lines 221--221
 [][][][][][][] 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 229--229
+Overfull \hbox (6.0pt too wide) in paragraph at lines 231--231
 [][][][][][][] 
  []
 
 LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <12> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 238.
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 240.
 [6]
-Overfull \hbox (6.0pt too wide) in paragraph at lines 248--248
+Overfull \hbox (6.0pt too wide) in paragraph at lines 250--250
 [][][][][][][] 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 289--289
+Overfull \hbox (6.0pt too wide) in paragraph at lines 291--291
 [][][][][][][] 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 293--293
-[][][][][][][] 
- []
-
-
-Overfull \hbox (6.0pt too wide) in paragraph at lines 297--297
+Overfull \hbox (6.0pt too wide) in paragraph at lines 295--295
 [][][][][][][] 
  []
 
 [7]
-Overfull \hbox (6.0pt too wide) in paragraph at lines 301--301
+Overfull \hbox (6.0pt too wide) in paragraph at lines 299--299
 [][][][][][][] 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 307--307
+Overfull \hbox (6.0pt too wide) in paragraph at lines 303--303
 [][][][][][][] 
  []
 
 
-Overfull \hbox (6.0pt too wide) in paragraph at lines 311--311
+Overfull \hbox (6.0pt too wide) in paragraph at lines 309--309
+[][][][][][][] 
+ []
+
+
+Overfull \hbox (6.0pt too wide) in paragraph at lines 313--313
 [][][][][][][] 
  []
 
 LaTeX Font Info:    Font shape `OT1/pcr/bx/n' in size <10> not available
-(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 330.
+(Font)              Font shape `OT1/pcr/b/n' tried instead on input line 332.
 [8]
-Overfull \hbox (2.08408pt too wide) in paragraph at lines 342--343
+Overfull \hbox (2.08408pt too wide) in paragraph at lines 344--345
 []\OT1/cmss/m/n/10 No, \OT1/pcr/m/n/10 mdrun[]LS \OT1/cmss/m/n/10 only uses the
  po-
  []
 
 
-Overfull \hbox (13.11334pt too wide) in paragraph at lines 348--349
+Overfull \hbox (13.11334pt too wide) in paragraph at lines 350--351
 []
  []
 
-<figs/tot.pdf, id=219, 497.10738pt x 179.285pt>
+[9] <figs/tot.pdf, id=225, 497.10738pt x 179.285pt>
 File: figs/tot.pdf Graphic file (type pdf)
  <use figs/tot.pdf>
-Package pdftex.def Info: figs/tot.pdf used on input line 354.
+Package pdftex.def Info: figs/tot.pdf used on input line 356.
 (pdftex.def)             Requested size: 397.48499pt x 143.35706pt.
 
-Overfull \hbox (7.33043pt too wide) in paragraph at lines 358--359
+Overfull \hbox (7.33043pt too wide) in paragraph at lines 360--361
 []\OT1/cmss/m/n/10 The
  []
 
-<figs/evol.pdf, id=220, 404.4449pt x 415.49614pt>
+<figs/evol.pdf, id=227, 404.4449pt x 415.49614pt>
 File: figs/evol.pdf Graphic file (type pdf)
  <use figs/evol.pdf>
-Package pdftex.def Info: figs/evol.pdf used on input line 362.
+Package pdftex.def Info: figs/evol.pdf used on input line 364.
 (pdftex.def)             Requested size: 289.07999pt x 296.98238pt.
 
-Overfull \hbox (30.19318pt too wide) in paragraph at lines 366--367
+Overfull \hbox (30.19318pt too wide) in paragraph at lines 368--369
 []\OT1/cmss/m/n/10 Mechanical
  []
 
-[9] [10 <./figs/tot.pdf> <./figs/evol.pdf
+[10 <./figs/tot.pdf> <./figs/evol.pdf
 
 pdfTeX warning: /usr/texbin/pdflatex (file ./figs/evol.pdf): PDF inclusion: mul
 tiple pdfs with page group included in a single page
->] <figs/3D_stress_black_bw.pdf, id=309, 1857.94125pt x 1972.36874pt>
+>] <figs/3D_stress_black_bw.pdf, id=313, 1857.94125pt x 1972.36874pt>
 File: figs/3D_stress_black_bw.pdf Graphic file (type pdf)
 
 <use figs/3D_stress_black_bw.pdf>
-Package pdftex.def Info: figs/3D_stress_black_bw.pdf used on input line 372.
+Package pdftex.def Info: figs/3D_stress_black_bw.pdf used on input line 374.
 (pdftex.def)             Requested size: 289.07999pt x 306.88774pt.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 379.
- [11 <./figs/3D_stress_black_bw.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 379.
 
-(./Local_stress.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 379.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 379.
+Overfull \hbox (83.40327pt too wide) in paragraph at lines 378--379
+[]
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 383.
+[11 <./figs/3D_stress_black_bw.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 383.
+ (./Local_stress.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 383.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 383.
 Package rerunfilecheck Info: File `Local_stress.out' has not changed.
-(rerunfilecheck)             Checksum: 7912EABEE8FE45E78AC40D48D900670A;768.
+(rerunfilecheck)             Checksum: 23B7B9F8CD723E77A1C1012A69EE0F81;754.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 379.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 383.
  ) 
 Here is how much of TeX's memory you used:
- 9014 strings out of 493315
- 133937 string characters out of 6137904
- 386386 words of memory out of 5000000
- 12193 multiletter control sequences out of 15000+600000
- 24152 words of font info for 89 fonts, out of 8000000 for 9000
+ 9020 strings out of 493315
+ 133997 string characters out of 6137904
+ 381700 words of memory out of 5000000
+ 12198 multiletter control sequences out of 15000+600000
+ 24508 words of font info for 90 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,7n,40p,1532b,970s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,7n,40p,1532b,1696s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2013/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/tex
@@ -639,14 +646,15 @@ ve/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive
 texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/local/texlive/2013/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/local/texlive/2013/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/local/texlive/2013/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb></usr/local/texlive/2013/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2013/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2013/texm
 f-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/local/texlive/2013/texmf-dist/f
 onts/type1/urw/courier/ucrr8a.pfb>
-Output written on Local_stress.pdf (11 pages, 4043109 bytes).
+Output written on Local_stress.pdf (11 pages, 4053684 bytes).
 PDF statistics:
- 403 PDF objects out of 1000 (max. 8388607)
- 342 compressed objects within 4 object streams
+ 412 PDF objects out of 1000 (max. 8388607)
+ 350 compressed objects within 4 object streams
  139 named destinations out of 1000 (max. 500000)
  104 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -46,13 +46,15 @@
 \section{Introduction}
 This is a manual for GROMACS-LS, a custom GROMACS version to compute the local stress tensor in 3D from a molecular dynamics simulation. This program computes the local stress based on the Hardy stress definition (see Ch.8 in Tadmor \& Miller (2011) {\bf Modeling Materials: Continuum, Atomistic and Multiscale Techniques}). The atomic virial stress (A. P. Thompson et al., J. Chem. Phys. 131, 154107 (2009)) definition was also recently added. Methodological details of the implementation can be found in:
 
-{\bf Importance of Force Decomposition for Local Stress Calculations in Biomembrane Molecular Simulations} by J. M. Vanegas, A. Torres-Sanchez, and M. Arroyo. J. Chem. Theor. Comput.  10, 691 (2014). 
+\textbf{Importance of Force Decomposition for Local Stress Calculations in Biomembrane Molecular Simulations} by J. M. Vanegas, A. Torres-Sanchez, and M. Arroyo. \emph{J. Chem. Theor. Comput.}  10, 691-702 (\textbf{2014}). 
 
-{\bf Examining the Mechanical Equilibrium of Microscopic Stresses in Molecular Simulations} by  A. Torres-S\'anchez, J. M. Vanegas, and M. Arroyo. PRL (2015, in press).
+\textbf{Examining the Mechanical Equilibrium of Microscopic Stresses in Molecular Simulations} by  A. Torres-S\'anchez, J. M. Vanegas, and M. Arroyo. \emph{Phys. Rev. Lett.} 114, 258102 (\textbf{2015}).
+
+\textbf{Geometric Derivation of the Microscopic Stress: A Covariant Central Force Decomposition} by  A. Torres-S\'anchez, J. M. Vanegas, and M. Arroyo. In preparation.
 
 We have patched the GROMACS source code (v4.5.5) at various locations in the routines that calculate particles forces and velocities. Our patches rely heavily on the code structure and functions implemented in a previous local pressure code (obtained from \url{http://repo.or.cz/w/gromacs.git/shortlog/refs/heads/release-4-5-localpressure} and \url{ftp://ftp.gromacs.org/pub/tmp/gromacs-4.0.2_localpressure.tar.gz}). This previous code implements the methodology outlined in
 
-{\bf 3D Pressure Field in Lipid Membranes and Membrane-Protein Complexes} by S. Ollila et al. Phys. Rev. Lett. 102, 078101 (2009). 
+\textbf{3D Pressure Field in Lipid Membranes and Membrane-Protein Complexes} by S. Ollila et al. \emph{Phys. Rev. Lett.} 102, 078101 (\textbf{2009}). 
 
 \subsection{Highlights of GROMACS-LS}
 \begin{itemize}
@@ -110,7 +112,7 @@ GROMACS-LS is based on GROMACS version 4.5.5. While the vanilla 4.5.5 version ca
 
 External requirements: FFTW3, LAPACK
 
-You will need to install a recent version of the FFTW3 library (in double precision and as shared library), CMake, and LAPACK (http://www.netlib.org/lapack). The LAPACK library needs to be installed as a shared library (.so). Compiling LAPACK with the autoconf tools can be hassle, but recent versions can be easily compiled and installed with CMake.
+You will need to install a recent version of the FFTW3 library (in double precision and as shared library), CMake, and LAPACK (http://www.netlib.org/lapack). The LAPACK library needs to be installed as a shared library (.so). Compiling LAPACK with the autoconf tools can sometimes be a hassle, but recent versions can be easily compiled and installed with CMake.
 
 \begin{lstlisting}[caption=Installing LAPACK with CMake]
 $> tar -zxvf lapack-3.5.0.tgz
@@ -120,7 +122,7 @@ $> cd build
 $> ccmake ../
 \end{lstlisting}
 
-Once the \texttt{ccmake} dialog comes up, press c to begin the initial configuration. Change the \texttt{BUILD\_SHARED\_LIBS} flag to ON and modify the \texttt{CMAKE\_INSTALL\_PREFIX} variable to set the target installation directory. After ccmake quits, you can follow the standard linux installation commands of \texttt{make} and \texttt{make install}.
+Once the \texttt{ccmake} dialog comes up, press c to begin the initial configuration. Change the \texttt{BUILD\_SHARED\_LIBS} flag to ON and modify the \texttt{CMAKE\_INSTALL\_PREFIX} variable to set the target installation directory. After \texttt{ccmake} quits, you can follow the standard linux installation commands of \texttt{make} and \texttt{make install}.
 
 If you install FFTW3 and LAPACK with a linux distribution such as Ubuntu or Fedora, you will also need to install the development (header) packages. If you have installed the FFTW3 or LAPACK libraries in a non-standard location (i.e. other than /usr/lib or /usr/local/lib), then before running \texttt{ccmake} you should export the variables \texttt{FFTW3\_ROOT\_DIR} and \texttt{CMAKE\_PREFIX\_PATH}, e.g.
 
@@ -142,7 +144,7 @@ Once the \texttt{ccmake} dialog comes up, press c to begin the initial configura
 
 Do not modify other variables unless you KNOW what you are doing. By default, the code is compiled in double precision (this is absolutely necessary), it cannot be compiled with MPI or GPU support, and all programs have the suffix \_LS. Press c again and then g to generate the necessary Makefiles.
 
-After ccmake quits, you can follow the standard linux installation commands of \texttt{make} and \texttt{make install}.
+After \texttt{ccmake} quits, you can follow the standard linux installation commands of \texttt{make} and \texttt{make install}.
 
 In addition to the GROMACS-LS code, we have also included two python programs:
 
@@ -187,7 +189,7 @@ nstxtcout       = 0\\
 
 If your simulation was performed with PME or another long-range electrostatic method, you will need to create a new \texttt{.tpr} file with the \texttt{coulombtype} set to \texttt{Cut-off} or \texttt{Reaction-field} and a cutoff radius of at least 2.0-2.2 nm (see the Ref. 2 for more details). Note that this does not change your original trajectory but the way forces are calculated when analyzing each frame.
 
-As with other Gromacs tools, \texttt{mdrun\_LS} displays a help text running \texttt{mdrun\_LS -h}. \texttt{mdrun\_LS} has several special options for analyzing the stress:
+As with other GROMACS tools, \texttt{mdrun\_LS} displays a help text running \texttt{mdrun\_LS -h}. \texttt{mdrun\_LS} has several special options for analyzing the stress:
 \begin{lstlisting}[caption=\texttt{mdrun\_LS} special options]
 Option     Filename  Type         Description
 ------------------------------------------------------------
@@ -237,10 +239,10 @@ stresstensor = sizeof(double)*9*gridx*gridy*gridz
 
 \subsection{\texttt{tensortools}: Python scripts to post-process the stress fields \label{postprocess}}
 
-The command \texttt{mdrun\_LS} produces binary \texttt{.dat0} files that need to be post-processed for analysis. To make life easier, we have included two tools \texttt{tensortools} and \texttt{LStensor.py} that can load, transform and save these binary files in useful formats. These python files are directly installed to the binary folder of the GROMACS\_LS distribution. These python utilities require recent versions of the Numpy and Scipy packages, and optionally the ProDy package (http://prody.csb.pitt.edu/) when using some of the stress per atom options.
+The command \texttt{mdrun\_LS} produces binary \texttt{.dat0} files that need to be post-processed for analysis. To make life easier, we have included two tools \texttt{tensortools} and \texttt{LStensor.py} that can load, transform and save these binary files in useful formats. These python files are directly installed to the binary folder of the GROMACS-LS distribution. These python utilities require recent versions of the Numpy and Scipy packages, and optionally the ProDy package (http://prody.csb.pitt.edu/) when using some of the stress per atom options.
 
 \subsubsection{LStensor}
-The \texttt{LStensor.py} file defines what we call the LStensor object and corresponding analysis functions, which can be used to post-process the data from the GROMACS\_LS program. This object can load IKN stresses as well as stresses per atom and convert these to a grid. It can also be used to compute the basic invariants of the stress as well as its divergence. It also provides a number of functions to load PDB files (stress per atom only) and to store files in NETCDF, plain txt, and PDB format.
+The \texttt{LStensor.py} file defines what we call the LStensor object and corresponding analysis functions, which can be used to post-process the data from the GROMACS-LS program. This object can load IKN stresses as well as stresses per atom and convert these to a grid. It can also be used to compute the basic invariants of the stress as well as its divergence. It also provides a number of functions to load PDB files (stress per atom only) and to store files in NETCDF, plain txt, and PDB format.
 
 \subsubsection{tensortools}
 The other file, \texttt{tensortools}, is a command-line utility that can be used for a rapid post-processing of the binary stress files. It uses the functions defined in \texttt{LStensor.py} and allows easy manipulation of the data. The main options are:
@@ -294,7 +296,7 @@ tensortools -f file0.dat0 file1.dat0 file2.dat0 -o stress.dat0
 tensortools -f file.dat0 --oformat nc -o stress.nc
 \end{lstlisting}
 
-\begin{lstlisting}[caption={Compute a stress profile along the y axis and saves it to a text file}]
+\begin{lstlisting}[caption={Compute a stress profile along the y axis and save it to a text file}]
 tensortools -f file.dat0 --prof y -o stress.txt
 \end{lstlisting}
 
@@ -323,55 +325,57 @@ In the new version of the code, computing any flavor of the central force decomp
 \end{equation}
 where $\mathcal{I}_I$ is the set of particles interacting through the potential $V_I$, $\bm{f}^{\alpha\beta}$ are the terms of the force decomposition and $\varphi{\alpha\beta}$ are their respective magnitudes. If $n_I$, the number of particles involved in the potential, is equal or smaller than 4, this overdetermined system has a single solution and thus cCFD and nCFD coincide. For potentials beyond 4-body, such as the CMAP interaction, this systems becomes underdetermined with an infinite number of possible solutions. We have recently proposed a preferred CFD based on covariance arguments (Torres-S\'anchez et al., in preparation), which we call cCFD. To compute this cCFD we first need to compute a solution to Eq.~\eqref{system}. We do this by calling the DGELSD function of the LAPACK library (\url{http://www.netlib.org/lapack/explore-html/db/d6a/dgelsd_8f.html}) which solves under- and overdetermined linear systems by computing the solution with minimum norm. The solution to this problem is a CFD, which we call nCFD (non-covariant central force decomposition). To compute the cCFD, nCFD is projected onto the tangent plane to the Shape Space, which is calculated through the derivative of Caley-Menger determinants. While nCFD depends on the parametrization of the potential and give spurious results, we have recently proven that cCFD is independent of the representation of the potential and gives physically relevant results (see Torres-S\'anchez et al., for more details). 
 
-\subsection{Frequently Asked Questions}
+\section{Frequently Asked Questions}
 
 \begin{description}
 
 \item[Q1. How long does it take to analyze a trajectory with \texttt{mdrun\_LS}?] This depends on the size of your system and the grid size. Analysis time increases with a larger system and a finer grid. For a typical system with approximately 100,000 atoms and a grid spacing of 0.1 nm it can take 5-10 minutes (depending on your hardware) to analyze each frame in the trajectory. The code does not utilize any of the SIMD or GPU optimizations that the vanilla GROMACS uses and therefore is much slower.
 
-\item[Q2. \texttt{mdrun\_LS} has been stuck on the first frame of the trajectory for hours, what's wrong?] If the analysis is taking an unusually long time there may be something wrong with the input files or there may be an unknown problem with the code. You can check this by selecting to output only one of the components such as kinetic one (using the \texttt{-lscont vel} flag), which should be done very quickly even for a large number of particles. If this fails there may be a problem with the trajectory, otherwise there may a particular problem with some of the interactions being calculated. You can try calculating some of the other individual components in order to narrow it down and contact us regarding a particular issue.
+\item[Q2. \texttt{mdrun\_LS} has been stuck on the first frame of the trajectory for hours, what's wrong?] If the analysis is taking an unusually long time there may be something wrong with the input files or there may be an unknown problem with the code. You can check this by selecting to output only one of the components such as the kinetic one (using the \texttt{-lscont vel} flag), which should be done very quickly even for a large number of particles. If this fails there may be a problem with the trajectory, otherwise there may a particular problem with some of the interactions being calculated. You can try calculating some of the other individual components in order to narrow it down and contact us regarding a particular issue.
 
 \item[Q3. I get a segmentation fault when running \texttt{mdrun\_LS}] Make sure that \texttt{mdrun\_LS} is run in a different folder than where the input trajectory is at, otherwise the program may inadvertently overwrite the input trajectory and cause the error.
 
-\item[Q4. Can the program be run in parallel? ] Not directly. The program must always be run serially. However, each frame in a trajectory can be analyzed completely independent of every other frame. So one method to parallelize the analysis is to separate the trajectory into smaller chunks with equal number of frames (using \texttt{trjconv\_LS -split}), and analyze each chunk separately. You can then average all of the resulting stress files together using the \texttt{tensortools} utility. The advantage of this method is that it always scales linearly although it takes a bit of work to set up. CAUTION! When doing this make sure to use the same \texttt{.tpr} file and same grid spacing to analyze each chunk of the trajectory, otherwise the grid sizes may differ and the average will fail.
+\item[Q4. Can the program be run in parallel? ] Not directly. The program must always be run serially. However, each frame in a trajectory can be analyzed completely independent of every other frame. One method to parallelize the analysis is to separate the trajectory into smaller chunks with equal number of frames (using \texttt{trjconv\_LS -split}), and analyze each chunk separately. You can then average all of the resulting stress files together using the \texttt{tensortools} utility. The advantage of this method is that it always scales linearly although it takes a bit of work to set up. CAUTION! When doing this make sure to use the same \texttt{.tpr} file and same grid spacing to analyze each chunk of the trajectory, otherwise the grid sizes may differ and the average will fail.
 
-\item[Q5. Are the velocities needed?] Absolutely! The kinetic contribution to the stress cannot be calculate without the velocities, and this is a pretty substantial contribution to the total stress.
+\item[Q5. Are the velocities needed?] Absolutely! The kinetic contribution to the stress cannot be calculated without the velocities, and this can be pretty substantial contribution to the total stress.
 
 \item[Q5. Can I use an \texttt{.xtc} file instead of a \texttt{.trr} file?] No. The \texttt{.xtc} file only stores the positions and not the velocities.
 
 \item[Q6. Does \texttt{mdrun\_LS} use the positions and velocities from the \texttt{.tpr} file?] No, \texttt{mdrun\_LS} only uses the positions and velocities stored in the \texttt{.trr} trajectory. However, the initial box size, and therefore the grid size are determined from the values in the \texttt{.tpr} file.
 
-\item[Q7. Are electrostatic contributions calculated using PME included in the stress tensor?] No. At the moment, electrostatic contributions calculated in reciprocal space are not included in the local stress calculation. If you ran your simulation with PME electrostatics, you must change the \texttt{coulombtype} to \texttt{Cut-off} and select an appropriate cut-off value (\texttt{rcoulomb}) in the \texttt{.mdp} file. Then, you can create a new \texttt{.tpr} with \texttt{grompp\_LS}. We recommend to use an \texttt{rcoulomb} value of at least 2.0 - 2.2 nm. CAUTION! The electrostatic contribution to the stress is one of the most computationally intense due to the large number of pair interactions in a typical simulation. The number of interactions increases cubically with the cut-off radius. In our experience, using a cut-off beyond 3.0 nm is computationally unfeasible for normal systems. See Vanegas et al. (JCTC 2014) for more details.
+\item[Q7. Are electrostatic contributions calculated using PME included in the stress tensor?] No. At the moment, electrostatic contributions calculated in reciprocal space are not included in the local stress calculation. If you ran your simulation with PME electrostatics, you must change the \texttt{coulombtype} to \texttt{Cut-off} and select an appropriate cut-off value (\texttt{rcoulomb}) in the \texttt{.mdp} file. Then, you can create a new \texttt{.tpr} with \texttt{grompp\_LS}. We recommend to use an \texttt{rcoulomb} value of at least 2.0 - 2.2 nm. CAUTION! The electrostatic contribution to the stress is very computationally expensive due to the large number of pair interactions in a typical simulation. The number of interactions increases cubically with the cut-off radius. In our experience, using a cut-off beyond 3.0 nm is computationally unfeasible for normal systems. See Vanegas et al. (JCTC 2014) for more details.
 
 \item[Q8. What is the relation between stress and pressure?] The pressure tensor, $P_{ij}$, has the opposite sign as the stress tensor, $\sigma_{ij}$, so $P_{ij} = -\sigma_{ij}$
 
 \item[Q9. The total stress obtained with \texttt{GROMACS-LS} does not match the pressures obtained with \texttt{g\_energy}] First, if you simulated your system with PME electrostatics and re-analyze with a Cut-off, then the total stress values will never match the virial pressures calculated by GROMACS unless you use an infinite cut-off. See Vanegas et al. (JCTC 2014) for more details. Also, the values obtained from the single precision \texttt{.edr} file generated during the simulation run are not accurate. To do a meaningful comparison you need to reanalyze the trajectory (i.e. \texttt{mdrun\_d -rerun}) using a double precision version of GROMACS and recompute the pressure with \texttt{g\_energy\_d}.
 
-\item[Q10. Is it normal for the local stress values to be so large?] The local stress can easily reach values up to several thousand bars depending on the system and types of interactions.
+\item[Q10. Is it normal for the local stress values to be so large?] The local stress can easily reach values up to several thousand bars depending on the system and types of interactions (see Figure \ref{CGvsUA}).
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=5.5in]{figs/tot.pdf}
-\caption{Comparison of stress profiles ($P_N = -\sigma_{zz}$ and $P_L = -(\sigma_{xx} + \sigma_{yy})/2$) for bilayer systems simulated with coarse grained and atomistic force-fields.}
+\caption{Comparison of stress profiles ($P_N = -\sigma_{zz}$ and $P_L = -(\sigma_{xx} + \sigma_{yy})/2$) for bilayer systems simulated with coarse grained and atomistic force-fields.}\label{CGvsUA}
 \end{figure}
 
-\item[Q11. How often should I save frames to the trajectory? How long does the simulation need to be?] The answer to this may differ depending on the system. For lipid bilayer systems we typically save frames to the trajectory every 5 or 10 ps, and analyze a 100 ns trajectory. The following shows the improvement in the convergence of the stress profile depending on the number of frames used:
+\item[Q11. How often should I save frames to the trajectory? How long does the simulation need to be?] The answer to this may differ depending on the system. For lipid bilayer systems we typically save frames to the trajectory every 5 or 10 ps, and analyze a 100 ns trajectory. Figure \ref{convergence} shows the convergence of the stress profile depending on the number of frames used.
 
  \begin{figure}[!ht]
  \centering
  \includegraphics[width=4in]{figs/evol.pdf}
- \caption{}
+ \caption{} \label{convergence}
  \end{figure}
 
-\item[Q12. Why is the normal component (e.g.~$\sigma_{N}$) of the stress profile of my bilayer system not zero?] Mechanical equilibrium dictates that the component of the stress along the direction normal to a lipid bilayer should be constant. The average value of this constant component should match the imposed value of the simulation pressure for the given dimension, which may or may not be zero. The important point is that it should be constant. If $\sigma_{N}$ is not constant (beyond reasonable noise) then there could be several problems with the simulation. First, check that the lipid membrane is fully equilibrated. In our systems composed of 200 lipids (100 lipids in each leaflet) in the liquid phase we equlibrate for 400 ns before running the data collection period. Second, check the \texttt{comm\_grps} option in the \texttt{.mdp} file. Bilayer systems are often simulated with center of mass motion removal done on different groups separately, e.g. \texttt{comm\_grps = BILAYER SOL}. However, doing this will change the internal mechanical behavior of the system. For local stress analysis this \texttt{grompp} option should always be set \texttt{comm\_grps = System} during the simulation run.
+\item[Q12. Why is the normal component (e.g.~$\sigma_{N}$) of the stress profile of my bilayer system not zero?] Mechanical equilibrium dictates that the component of the stress along the direction normal to a lipid bilayer should be constant. The average value of this constant component should match the imposed value of the simulation pressure for the given dimension, which may or may not be zero. The important point is that it should be constant. If $\sigma_{N}$ is not constant (beyond reasonable noise) then there could be several problems with the simulation. First, check that the lipid membrane is fully equilibrated. For our systems composed of 200 lipids (100 lipids in each leaflet) in the liquid phase we equlibrate for 400 ns before running the data collection period. Second, check the \texttt{comm\_grps} option in the \texttt{.mdp} file. Bilayer systems are often simulated with center of mass motion removal done on different groups separately, e.g. \texttt{comm\_grps = BILAYER SOL}. However, doing this will change the internal mechanical behavior of the system. For local stress analysis this \texttt{grompp} option should always be set \texttt{comm\_grps = System} during the simulation run.
 
-\item[Q13. Can the 3D stress tensor be loaded into other programs for visualization?] Yes. The easiest way to do this is to first convert the binary stress file to the NETCDF format using the \texttt{tensortools} utility. You can then load this generic NETCDF file into programs such as UCSF Chimera or Paraview.
+\item[Q13. Can the 3D stress tensor be loaded into other programs for visualization?] Yes. The easiest way to do this is to first convert the binary stress file to the NETCDF format using the \texttt{tensortools} utility. You can then load this generic NETCDF file into programs such as UCSF Chimera or ParaView. Figure \ref{paraview} shows an example of visualizing  a single element of the stress tensor in ParaView.
 
 \begin{figure}[!h]
 \centering
 \includegraphics[width=4in]{figs/3D_stress_black_bw.pdf}
-\caption{3D stress tensor for a bilayer system visualized in Paraview}
+\caption{3D stress tensor for a bilayer system visualized in ParaView}\label{paraview}
 \end{figure}
+
+\item[Q14. Can I use GROMACS-LS (v.4.5.5) to analyze a trajectory created with a new version of GROMACS (4.6 or 5.x)?] Depends. If your simulation uses features (i.e., potentials and such) that are also available in the 4.5.5 version, then it should not be a problem. However, there is a big change in the newer versions of GROMACS with regards to the non-bonded cut-off schemes (see \url{http://manual.gromacs.org/documentation/5.1/user-guide/cutoff-schemes.html}). This can affect certain non-bonded interactions and forcefields that use twin-range cut-offs (e.g., GROMOS). To ensure compatibility with GROMACS-LS, you can explicitly use the group cut-off scheme by setting \texttt{cutoff-scheme = group} in the \texttt{.mdp} file.
 
 \end{description}
 

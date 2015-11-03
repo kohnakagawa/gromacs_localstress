@@ -406,15 +406,15 @@ class LStensor:
         # Define the dimensions and set the units
         fp.createDimension('x',self.nx)
         x = fp.createVariable('x', 'd', ('x',))
-        x[:] = np.linspace(0.0,self.box[0,0],num=self.nx)
+        x[:] = np.linspace(0.0,self.box[0,0],num=self.nx, endpoint=false)
         x.units = 'nm'
         fp.createDimension('y',self.ny)
         y = fp.createVariable('y', 'd', ('y',))
-        y[:] = np.linspace(0.0,self.box[1,1],num=self.ny)
+        y[:] = np.linspace(0.0,self.box[1,1],num=self.ny, endpoint=false)
         y.units = 'nm'
         fp.createDimension('z',self.nz)
         z = fp.createVariable('z', 'd', ('z',))
-        z[:] = np.linspace(0.0,self.box[2,2],num=self.nz)
+        z[:] = np.linspace(0.0,self.box[2,2],num=self.nz, endpoint=false)
         z.units = 'nm'
 
         # Store the data array
