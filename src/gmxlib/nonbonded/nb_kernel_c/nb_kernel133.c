@@ -297,7 +297,7 @@ void nb_kernel133(
                /* begin stress tensor */
                 if ((locals_grid->contrib == enAll) || (locals_grid->contrib == enVdw) || (locals_grid->contrib == enCoul))
                 {
-                    lpR[0][0] = ix1; lpR[0][1] = iy1; lpR[0][2] = iz2; 
+                    lpR[0][0] = ix1; lpR[0][1] = iy1; lpR[0][2] = iz1; 
                     lpR[1][0] = jx1; lpR[1][1] = jy1; lpR[1][2] = jz1; 
                     lpatIDs[0] = ii; lpatIDs[1] = jnr;
                     lpF[0][0] = tx;  lpF[0][1] = ty;  lpF[0][2] = tz;

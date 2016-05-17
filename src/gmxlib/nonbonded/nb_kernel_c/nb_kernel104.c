@@ -279,8 +279,8 @@ void nb_kernel104(
                 if ((locals_grid->contrib == enAll) || (locals_grid->contrib == enVdw) || (locals_grid->contrib == enCoul))
                 {
                     lpR[0][0] = ix2; lpR[0][1] = iy2; lpR[0][2] = iz2; 
-                    lpR[1][0] = jx3; lpR[1][1] = jy3; lpR[1][2] = jz3; 
-                    lpatIDs[0] = ii+1; lpatIDs[1] = jnr+2;
+                    lpR[1][0] = jx2; lpR[1][1] = jy2; lpR[1][2] = jz2; 
+                    lpatIDs[0] = ii+1; lpatIDs[1] = jnr+1;
                     lpF[0][0] = tx;  lpF[0][1] = ty;  lpF[0][2] = tz;
                     lpF[1][0] = -tx; lpF[1][1] = -ty; lpF[1][2] = -tz;
                     //printf("Kernel104\n");
