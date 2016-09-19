@@ -102,6 +102,13 @@ void gmxLS_distribute_stress(gmxLS_locals_grid_t * grid, int nAtom, int* atomIDs
                 gmxLS_spread_n5(grid, F[0], F[1], F[2], F[3], F[4], R[0], R[1], R[2], R[3], R[4]);
                 break;
 
+            // NOTE: To compare with the original implementation implemented
+            //       by Torres-Sanchez, et al., we prepare special case.
+            //       6 does not correspond to the number of atoms.
+            case 6:
+                gmxLS_spread_n3_HD(grid, F[0], F[1], F[2], R[0], R[1], R[2]);
+                break;
+
             default:
                 break;
         }
@@ -787,6 +794,98 @@ void gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         }
 
     }
+}
+
+// Hybrid Decomposition for angle potentials
+void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, rvec r1, rvec r2, rvec r3)
+{
+  // NOTE: use old c89 style.
+  int i;
+
+  rvec dr12, dr23, dr13;
+  rvec f_cent;
+
+  // Matrix of the system (12 equations x 6 unknowns)
+  real M[nRow3_HD*nCol3];
+  // Vector, we want to solve M*x = b
+  real b[nRow3_HD], s[nCol3_HD];
+
+  rvec_sub(r2, r1, dr12);
+  rvec_sub(r3, r2, dr23);
+  rvec_sub(r3, r1, dr13);
+
+  // NOTE: In order to verify the original code of CFD,
+  //       we also implement CFD.
+  if (grid->fdecomp == encCFD || grid->fdecomp == enCFD) {
+    rvec_add(r1, r3, f_cent);
+    svmul(0.5, f_cent, f_cent);
+  } else if (grid->fdecomp == enFCD) {
+    f_cent = gmxLS_get_OFC(r1, r2, dr12, F2);
+  } else if (grid->fdecomp == enHD_GM) {
+    f_cent = gmxLS_get_gmin(r1, r2, r3, dr12, dr23);
+  } else if (grid->fdecomp == enHD_LM) {
+    f_cent = gmxLS_get_gmax(r1, r2, r3, dr12, dr23);
+  } else {
+    fprintf(stderr, "Unknown force decomposition mode at %s %s\n", __FILE__, __LINE__);
+    exit(-1);
+  }
+
+  // lapack solver
+  M[nRow3_HD * 0 + 0] = dr21.x
+}
+
+rvec gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23, const real sign)
+{
+  real dr12_norm, dr23_norm, dr24_norm, cos123;
+  rvec dr21_hat, dr23_hat, dr24_hat;
+  rvec dr24;
+  rvec fcent;
+
+  dr12_norm = norm(dr12);
+  dr23_norm = norm(dr23);
+  dr24_norm = sqrt(dr12_norm * dr23_norm);
+
+  cos123 = -1.0 * iprod(dr12, dr23) / (dr12_norm * dr23_norm);
+  assert(dr12_norm >= (dr23_norm * (1.0 + cos123) * 0.5));
+  assert(dr23_norm >= (dr12_norm * (1.0 + cos123) * 0.5));
+
+  svmul(-1.0 / dr12_norm, dr12, dr21_hat);
+  svmul( 1.0 / dr23_norm, dr23, dr23_hat);
+
+  rvec_add(dr21_hat, dr23_hat, dr24_hat);
+  unitv(dr24_hat, dr24_hat);
+
+  svmul(dr24_norm * sign, dr24_hat, dr24);
+  rvec_add(r2, dr24, fcent);
+
+  return fcent;
+}
+
+rvec gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23)
+{
+  return gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, 1.0);
+}
+
+rvec gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23)
+{
+  return gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, -1.0);
+}
+
+rvec gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2)
+{
+  rvec dr21;
+  rvec f_cent, offset;
+  real dr21_norm2, F2_dr21;
+  /* r2 + F2 * (dr21 * dr21 / (F2 * dr21)) */
+
+  svmul(-1.0, dr12, dr21);
+
+  dr21_norm2 = norm2(dr21);
+  F2_dr21 = iprod(F2, dr21);
+  svmul(dr21_norm2 / F2_dr21, F2, offset);
+  rvec_add(r2, offset, f_cent);
+
+  return f_cent;
 }
 
 // Decompose Settle

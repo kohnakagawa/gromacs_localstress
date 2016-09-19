@@ -54,6 +54,9 @@
 #define enCFD       1
 #define enGLD       2
 #define enMOP       3
+#define enFCD       4
+#define enHD_GM     5
+#define enHD_LM     6
 
 #define enSL        0
 #define enAll       1
@@ -73,6 +76,9 @@
 
 #define nRow3       9
 #define nCol3       3
+
+#define nRow3_HD    12
+#define nCol3_HD    5
 
 #define nRow4       12
 #define nCol4       6
@@ -188,6 +194,15 @@ void gmxLS_distribute_point_source(gmxLS_locals_grid_t * grid, rvec pt, matrix s
 
 // Decompose 3-body potentials (angles)
 void   gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Ra, rvec Rb, rvec Rc);
+
+// Decompose Hybrid Decomposition
+void   gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Ra, rvec Rb, rvec Rc);
+
+// NOTE: assuming that minimum image convention is employed.
+rvec   gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, const real sign);
+rvec   gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23);
+rvec   gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23);
+rvec   gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2);
 
 // Decompose Settle
 void   gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Ra, rvec Rb, rvec Rc);
