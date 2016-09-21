@@ -48,6 +48,7 @@
 #include "pbc.h"
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 //----------------------------------------------------------------------------------------
 // gmxLS_distribute_stress
@@ -363,7 +364,7 @@ void gmxLS_distribute_interaction(gmxLS_locals_grid_t * grid, rvec xi, rvec xj, 
         }
         else
         {
-            //printf("ERROR::gmx_spread_local_stress_on_grid: t=(%lf, %lf, %lf), i1=(%d, %d, %d), i2=(%d, %d, %d), x=(%d, %d, %d)\n",t[0], t[1], t[2], i1[0], i1[1], i1[2], i2[0], i2[1], i2[2], x[0], x[1], x[2]);
+            printf("ERROR::gmx_spread_local_stress_on_grid: t=(%lf, %lf, %lf), i1=(%d, %d, %d), i2=(%d, %d, %d), x=(%d, %d, %d)\n",t[0], t[1], t[2], i1[0], i1[1], i1[2], i2[0], i2[1], i2[2], x[0], x[1], x[2]);
             return;
         }
 
@@ -799,47 +800,101 @@ void gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
 // Hybrid Decomposition for angle potentials
 void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, rvec r1, rvec r2, rvec r3)
 {
-  // NOTE: use old c89 style.
   int i;
 
   rvec dr12, dr23, dr13;
-  rvec f_cent;
+  rvec dr41, dr42, dr43;
+  rvec r4;
+
+  rvec Fij;
 
   // Matrix of the system (12 equations x 6 unknowns)
-  real M[nRow3_HD*nCol3];
+  real M[nRow3_HD * nCol3_HD] = {0.0};
   // Vector, we want to solve M*x = b
-  real b[nRow3_HD], s[nCol3_HD];
+  real b[nRow3_HD] = {0.0}, s[nCol3_HD] = {0.0};
 
-  rvec_sub(r2, r1, dr12);
-  rvec_sub(r3, r2, dr23);
-  rvec_sub(r3, r1, dr13);
+  int nRow = nRow3_HD, nCol = nCol3_HD, nRHS = 1;
 
+  real wkopt;
+  real* work;
+  int lwork = -1;
+  int iwork[3 * nRow3_HD * 0 + 11 * nCol3_HD];
+  int info  =  0;
+  int rank;
+  real eps1 = epsLS;
+
+  rvec_sub(r2, r1, dr12); // r2 - r1
+  rvec_sub(r3, r2, dr23); // r3 - r2
+  rvec_sub(r3, r1, dr13); // r3 - r1
+\
   // NOTE: In order to verify the original code of CFD,
   //       we also implement CFD.
   if (grid->fdecomp == encCFD || grid->fdecomp == enCFD) {
-    rvec_add(r1, r3, f_cent);
-    svmul(0.5, f_cent, f_cent);
+    rvec_add(r1, r3, r4);
+    svmul(0.5, r4, r4);
   } else if (grid->fdecomp == enFCD) {
-    f_cent = gmxLS_get_OFC(r1, r2, dr12, F2);
+    gmxLS_get_OFC(r1, r2, dr12, F2, r4);
   } else if (grid->fdecomp == enHD_GM) {
-    f_cent = gmxLS_get_gmin(r1, r2, r3, dr12, dr23);
+    gmxLS_get_SDM_gmin(r1, r2, r3, dr12, dr23, r4);
   } else if (grid->fdecomp == enHD_LM) {
-    f_cent = gmxLS_get_gmax(r1, r2, r3, dr12, dr23);
+    gmxLS_get_SDM_lmin(r1, r2, r3, dr12, dr23, r4);
   } else {
-    fprintf(stderr, "Unknown force decomposition mode at %s %s\n", __FILE__, __LINE__);
+    fprintf(stderr, "Unknown force decomposition mode at %s %d\n", __FILE__, __LINE__);
     exit(-1);
   }
 
+  rvec_sub(r4, r1, dr41);
+  rvec_sub(r4, r2, dr42);
+  rvec_sub(r4, r3, dr43);
+
   // lapack solver
-  M[nRow3_HD * 0 + 0] = dr21.x
+  M[nRow3_HD * 0 + 0] = -dr12[0]; M[nRow3_HD * 1 + 0] = dr41[0];
+  M[nRow3_HD * 0 + 1] = -dr12[1]; M[nRow3_HD * 1 + 1] = dr41[1];
+  M[nRow3_HD * 0 + 2] = -dr12[2]; M[nRow3_HD * 1 + 2] = dr41[2];
+  b[0] = F1[0]; b[1] = F1[1]; b[2] = F1[2];
+
+  M[nRow3_HD * 0 + 3] =  dr12[0]; M[nRow3_HD * 2 + 3] = -dr23[0]; M[nRow3_HD * 3 + 3] = dr42[0];
+  M[nRow3_HD * 0 + 4] =  dr12[1]; M[nRow3_HD * 2 + 4] = -dr23[1]; M[nRow3_HD * 3 + 4] = dr42[1];
+  M[nRow3_HD * 0 + 5] =  dr12[2]; M[nRow3_HD * 2 + 5] = -dr23[2]; M[nRow3_HD * 3 + 5] = dr42[2];
+  b[3] = F2[0]; b[4] = F2[1]; b[5] = F2[2];
+
+  M[nRow3_HD * 2 + 6] = dr23[0]; M[nRow3_HD * 4 + 6] = dr43[0];
+  M[nRow3_HD * 2 + 7] = dr23[1]; M[nRow3_HD * 4 + 7] = dr43[1];
+  M[nRow3_HD * 2 + 8] = dr23[2]; M[nRow3_HD * 4 + 8] = dr43[2];
+  b[6] = F3[0]; b[7] = F3[1]; b[8] = F3[2];
+
+  M[nRow3_HD * 1 + 9]  = -dr41[0]; M[nRow3_HD * 3 + 9]  = -dr42[0]; M[nRow3_HD * 4 + 9]  = -dr43[0];
+  M[nRow3_HD * 1 + 10] = -dr41[1]; M[nRow3_HD * 3 + 10] = -dr42[1]; M[nRow3_HD * 4 + 10] = -dr43[1];
+  M[nRow3_HD * 1 + 11] = -dr41[2]; M[nRow3_HD * 3 + 11] = -dr42[2]; M[nRow3_HD * 4 + 11] = -dr43[2];
+  b[9] = 0.0;  b[10] = 0.0; b[11] = 0.0;
+
+  lwork = -1;
+  F77_FUNC(dgelsd, DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, &wkopt, &lwork, iwork, &info);
+  lwork = (int) wkopt;
+  work = (real*) malloc(lwork * sizeof(real));
+
+  F77_FUNC(dgelsd, DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, work, &lwork, iwork, &info);
+
+  // spread stress
+  Fij[0] = b[0] * (-dr12[0]); Fij[1] = b[0] * (-dr12[1]); Fij[2] = b[0] * (-dr12[2]);
+  gmxLS_distribute_interaction(grid, r2, r1, Fij, 0);
+  Fij[0] = b[1] * dr41[0]; Fij[1] = b[1] * dr41[1]; Fij[2] = b[1] * dr41[2];
+  gmxLS_distribute_interaction(grid, r4, r1, Fij, 0);
+  Fij[0] = b[2] * (-dr23[0]); Fij[1] = b[2] * (-dr23[1]); Fij[2] = b[2] * (-dr23[2]);
+  gmxLS_distribute_interaction(grid, r3, r2, Fij, 0);
+  Fij[0] = b[3] * dr42[0]; Fij[1] = b[3] * dr42[1]; Fij[2] = b[3] * dr42[2];
+  gmxLS_distribute_interaction(grid, r4, r2, Fij, 0);
+  Fij[0] = b[4] * dr43[0]; Fij[1] = b[4] * dr43[1]; Fij[2] = b[4] * dr43[2];
+  gmxLS_distribute_interaction(grid, r4, r3, Fij, 0);
+
+  free(work);
 }
 
-rvec gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23, const real sign)
+void gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23, const real sign, rvec ret)
 {
   real dr12_norm, dr23_norm, dr24_norm, cos123;
   rvec dr21_hat, dr23_hat, dr24_hat;
   rvec dr24;
-  rvec fcent;
 
   dr12_norm = norm(dr12);
   dr23_norm = norm(dr23);
@@ -856,25 +911,23 @@ rvec gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec d
   unitv(dr24_hat, dr24_hat);
 
   svmul(dr24_norm * sign, dr24_hat, dr24);
-  rvec_add(r2, dr24, fcent);
-
-  return fcent;
+  rvec_add(r2, dr24, ret);
 }
 
-rvec gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23)
+void gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23, rvec ret)
 {
-  return gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, 1.0);
+  gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, 1.0, ret);
 }
 
-rvec gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23)
+void gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec dr12, const rvec dr23, rvec ret)
 {
-  return gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, -1.0);
+  gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, -1.0, ret);
 }
 
-rvec gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2)
+void gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret)
 {
   rvec dr21;
-  rvec f_cent, offset;
+  rvec offset;
   real dr21_norm2, F2_dr21;
   /* r2 + F2 * (dr21 * dr21 / (F2 * dr21)) */
 
@@ -883,9 +936,7 @@ rvec gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2)
   dr21_norm2 = norm2(dr21);
   F2_dr21 = iprod(F2, dr21);
   svmul(dr21_norm2 / F2_dr21, F2, offset);
-  rvec_add(r2, offset, f_cent);
-
-  return f_cent;
+  rvec_add(r2, offset, ret);
 }
 
 // Decompose Settle

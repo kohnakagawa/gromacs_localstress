@@ -199,10 +199,10 @@ void   gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rv
 void   gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Ra, rvec Rb, rvec Rc);
 
 // NOTE: assuming that minimum image convention is employed.
-rvec   gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, const real sign);
-rvec   gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23);
-rvec   gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23);
-rvec   gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2);
+void   gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, const real sign, rvec ret);
+void   gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
+void   gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
+void   gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret);
 
 // Decompose Settle
 void   gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Ra, rvec Rb, rvec Rc);

@@ -424,6 +424,15 @@ int main(int argc,char *argv[])
   }else if(strncmp(localsfdenum,"mop",4) == 0){
     localsfdecomp = enMOP;
     printf("\nSelected force decomposition: %s\n", localsfdenum);
+  }else if(strncmp(localsfdenum,"fcd",4) == 0){
+    localsfdecomp = enFCD;
+    printf("\nSelected force decomposition: %s\n", localsfdenum);
+  }else if(strncmp(localsfdenum,"hdgm",4) == 0){
+    localsfdecomp = enHD_GM;
+    printf("\nSelected force decomposition: %s\n", localsfdenum);
+  }else if(strncmp(localsfdenum,"hdlm",4) == 0){
+    localsfdecomp = enHD_LM;
+    printf("\nSelected force decomposition: %s\n", localsfdenum);
   }else{
     printf("\nOption not recognized, will use covariant central force decomposition\n");
     localsfdecomp = encCFD;
