@@ -843,9 +843,9 @@ void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
     exit(-1);
   }
 
-  rvec_sub(r4, r1, dr41);
-  rvec_sub(r4, r2, dr42);
-  rvec_sub(r4, r3, dr43);
+  rvec_sub(r1, r4, dr41);
+  rvec_sub(r2, r4, dr42);
+  rvec_sub(r3, r4, dr43);
 
   // lapack solver
   M[nRow3_HD * 0 + 0] = -dr12[0]; M[nRow3_HD * 1 + 0] = dr41[0];
