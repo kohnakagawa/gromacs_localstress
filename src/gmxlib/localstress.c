@@ -826,7 +826,7 @@ void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
   rvec_sub(r2, r1, dr12); // r2 - r1
   rvec_sub(r3, r2, dr23); // r3 - r2
   rvec_sub(r3, r1, dr13); // r3 - r1
-\
+
   // NOTE: In order to verify the original code of CFD,
   //       we also implement CFD.
   if (grid->fdecomp == encCFD || grid->fdecomp == enCFD) {
