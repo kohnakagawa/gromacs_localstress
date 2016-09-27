@@ -383,8 +383,6 @@ void gmxLS_distribute_interaction(gmxLS_locals_grid_t * grid, rvec xi, rvec xj, 
 
     gmxLS_grid_distribute_line_source(sgrid,diff,d_cgrid,oldt,1,x,stress,nx,ny,nz,gridsp,invgridsp,&sumfactor);
 
-    printf("sum factor error is %f.\n", 1.0 - sumfactor);
-
     //------------------------------------------------------------------------------------
 }
 
