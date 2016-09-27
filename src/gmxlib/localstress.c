@@ -48,6 +48,7 @@
 #include "pbc.h"
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 //----------------------------------------------------------------------------------------
 // gmxLS_distribute_stress
@@ -373,6 +374,8 @@ void gmxLS_distribute_interaction(gmxLS_locals_grid_t * grid, rvec xi, rvec xj, 
 
     gmxLS_grid_distribute_line_source(sgrid,diff,d_cgrid,oldt,1,x,stress,nx,ny,nz,gridsp,invgridsp,&sumfactor);
     //------------------------------------------------------------------------------------
+
+    /* fprintf(stderr, "sum factor check %f", sumfactor); */
 }
 
 //----------------------------------------------------------------------------------------
@@ -439,6 +442,11 @@ void gmxLS_grid_distribute_line_source(matrix * sgrid, rvec a, rvec b, real t1, 
     int ii,jj,kk;
     matrix gridres;
     real t12,t22,t13,t23;
+
+    //
+    assert(t1 >= 0.0); assert(t1 <= 1.0);
+    assert(t2 >= 0.0); assert(t2 <= 1.0);
+    //
 
     t12=t1*t1;
     t13=t12*t1;
