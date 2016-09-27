@@ -460,33 +460,40 @@ void gmxLS_grid_distribute_line_source(matrix * sgrid, rvec a, rvec b, real t1, 
 
     ii=x[0]; jj=x[1]; kk=x[2];
 
+#ifndef EN_UNIFORM_WEIGHT
     dummy1 = -2*a[0]*a[1]*a[2]*t12*t12;
     dummy2 =  2*a[0]*a[1]*a[2]*t22*t22;
+#endif
 
     for(i=1;i>=-1;i-=2)
     {
         ii+=i;
+#ifndef EN_UNIFORM_WEIGHT
         dummy3 = 2*b[0]+i*gridsp[0];
         dummy7 = a[1]*a[2]*dummy3;
-
+#endif
         for(j=1;j>=-1;j-=2)
         {
             jj+=j;
+#ifndef EN_UNIFORM_WEIGHT
             dummy4 = 2*b[1]+j*gridsp[1];
             dummy6 = dummy3*dummy4;
             dummy8 = a[0]*a[2]*dummy4;
             dummy10= a[2]*dummy3*dummy4;
+#endif
 
             for(k=1;k>=-1;k-=2)
             {
                 kk+=k;
+#ifndef EN_UNIFORM_WEIGHT
                 dummy5 = 2*b[2]+k*gridsp[2];
                 dummy9 = a[1]*a[0]*dummy5;
                 dummy11= a[1]*dummy3*dummy5;
                 dummy12= a[0]*dummy4*dummy5;
+#endif
 
 #ifdef EN_UNIFORM_WEIGHT
-                factor = t2 - t1;
+                factor = 0.125 * invgridsp * (t2 - t1);
 #else
                 factor = i*j*k*0.125*invgridsp*invgridsp*(dummy1+dummy2+(t2-t1)*dummy6*dummy5+1.333333333333*(t23-t13)
                                                           *(dummy7+dummy8+dummy9)+(t22-t12)*(dummy10+dummy11+dummy12));
