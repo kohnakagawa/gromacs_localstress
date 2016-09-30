@@ -892,15 +892,46 @@ void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
 
   // spread stress
   Fij[0] = b[0] * (-dr12[0]); Fij[1] = b[0] * (-dr12[1]); Fij[2] = b[0] * (-dr12[2]);
-  gmxLS_distribute_interaction(grid, r2, r1, Fij, 0);
+  gmxLS_distribute_interaction(grid, r1, r2, Fij, 0);
   Fij[0] = b[1] * dr41[0]; Fij[1] = b[1] * dr41[1]; Fij[2] = b[1] * dr41[2];
-  gmxLS_distribute_interaction(grid, r4, r1, Fij, 0);
+  gmxLS_distribute_interaction(grid, r1, r4, Fij, 0);
   Fij[0] = b[2] * (-dr23[0]); Fij[1] = b[2] * (-dr23[1]); Fij[2] = b[2] * (-dr23[2]);
-  gmxLS_distribute_interaction(grid, r3, r2, Fij, 0);
+  gmxLS_distribute_interaction(grid, r2, r3, Fij, 0);
   Fij[0] = b[3] * dr42[0]; Fij[1] = b[3] * dr42[1]; Fij[2] = b[3] * dr42[2];
-  gmxLS_distribute_interaction(grid, r4, r2, Fij, 0);
+  gmxLS_distribute_interaction(grid, r2, r4, Fij, 0);
   Fij[0] = b[4] * dr43[0]; Fij[1] = b[4] * dr43[1]; Fij[2] = b[4] * dr43[2];
-  gmxLS_distribute_interaction(grid, r4, r3, Fij, 0);
+  gmxLS_distribute_interaction(grid, r3, r4, Fij, 0);
+
+#ifdef DEBUG
+  // for debug
+  /* rvec Fd_sum, error_vec;
+  // F1
+  Fd_sum[0] = b[0] * (-dr12[0]) +  b[1] * dr41[0];
+  Fd_sum[1] = b[0] * (-dr12[1]) +  b[1] * dr41[1];
+  Fd_sum[2] = b[0] * (-dr12[2]) +  b[1] * dr41[2];
+  rvec_sub(Fd_sum, F1, error_vec);
+  fprintf(stderr, "%g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+  // F2
+  Fd_sum[0] = b[0] * dr12[0] + b[3] * dr42[0] + b[2] * (-dr23[0]);
+  Fd_sum[1] = b[0] * dr12[1] + b[3] * dr42[1] + b[2] * (-dr23[1]);
+  Fd_sum[2] = b[0] * dr12[2] + b[3] * dr42[2] + b[2] * (-dr23[2]);
+  rvec_sub(Fd_sum, F2, error_vec);
+  fprintf(stderr, "%g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+  // F3
+  Fd_sum[0] = b[2] * dr23[0] + b[4] * dr43[0];
+  Fd_sum[1] = b[2] * dr23[1] + b[4] * dr43[1];
+  Fd_sum[2] = b[2] * dr23[2] + b[4] * dr43[2];
+  rvec_sub(Fd_sum, F3, error_vec);
+  fprintf(stderr, "%g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+  // F4
+  Fd_sum[0] = b[1] * (-dr41[0]) + b[3] * (-dr42[0]) + b[4] * (-dr43[0]);
+  Fd_sum[1] = b[1] * (-dr41[1]) + b[3] * (-dr42[1]) + b[4] * (-dr43[1]);
+  Fd_sum[2] = b[1] * (-dr41[2]) + b[3] * (-dr42[2]) + b[4] * (-dr43[2]);
+  fprintf(stderr, "%g %g %g\n", Fd_sum[0], Fd_sum[1], Fd_sum[2]); */
+#endif
 
   free(work);
 }
