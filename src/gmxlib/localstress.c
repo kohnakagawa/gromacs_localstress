@@ -900,7 +900,20 @@ void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
   gmxLS_distribute_interaction(grid, r3, r4, Fij, 0);
 
 #ifdef DEBUG
-  // for debug
+  // check the correctness of FCD
+  if (grid->fdecomp == enFCD) {
+    fprintf(stderr, "%g %g\n", b[0], b[2]);
+  }
+
+  // check the correctness of HD
+  if (grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM) {
+    const real dr41f41 = b[1] * norm2(dr41);
+    const real dr42f42 = b[3] * norm2(dr42);
+    const real dr43f43 = b[4] * norm2(dr43);
+    fprintf(stderr, "%g %g %g\n", dr41f41, dr42f42, dr43f43);
+  }
+
+  // check the correctness of force decomposition
   /* rvec Fd_sum, error_vec;
   // F1
   Fd_sum[0] = b[0] * (-dr12[0]) +  b[1] * dr41[0];
@@ -944,6 +957,7 @@ void gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec d
   dr24_norm = sqrt(dr12_norm * dr23_norm);
 
   cos123 = -1.0 * iprod(dr12, dr23) / (dr12_norm * dr23_norm);
+
   assert(dr12_norm >= (dr23_norm * (1.0 + cos123) * 0.5));
   assert(dr23_norm >= (dr12_norm * (1.0 + cos123) * 0.5));
 
