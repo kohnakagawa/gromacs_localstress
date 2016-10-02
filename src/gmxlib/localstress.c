@@ -451,51 +451,48 @@ void gmxLS_grid_distribute_line_source(matrix * sgrid, rvec a, rvec b, real t1, 
     matrix gridres;
     real t12,t22,t13,t23;
 
+
+    ii=x[0]; jj=x[1]; kk=x[2];
+
+#ifdef EN_UNIFORM_WEIGHT
+    factor = invgridsp * (t2 - t1);
+    *sumfactor += t2 - t1;
+    msmul(stress, factor, gridres);
+    m_add(sgrid[gmxLS_modulo(ii,nx)*nz*ny+gmxLS_modulo(jj,ny)*nz+gmxLS_modulo(kk,nz)], gridres,
+          sgrid[gmxLS_modulo(ii,nx)*nz*ny+gmxLS_modulo(jj,ny)*nz+gmxLS_modulo(kk,nz)]);
+#else
+
     t12=t1*t1;
     t13=t12*t1;
     t22=t2*t2;
     t23=t22*t2;
 
-    ii=x[0]; jj=x[1]; kk=x[2];
-
-#ifndef EN_UNIFORM_WEIGHT
     dummy1 = -2*a[0]*a[1]*a[2]*t12*t12;
     dummy2 =  2*a[0]*a[1]*a[2]*t22*t22;
-#endif
 
     for(i=1;i>=-1;i-=2)
     {
         ii+=i;
-#ifndef EN_UNIFORM_WEIGHT
         dummy3 = 2*b[0]+i*gridsp[0];
         dummy7 = a[1]*a[2]*dummy3;
-#endif
+
         for(j=1;j>=-1;j-=2)
         {
             jj+=j;
-#ifndef EN_UNIFORM_WEIGHT
             dummy4 = 2*b[1]+j*gridsp[1];
             dummy6 = dummy3*dummy4;
             dummy8 = a[0]*a[2]*dummy4;
             dummy10= a[2]*dummy3*dummy4;
-#endif
 
             for(k=1;k>=-1;k-=2)
             {
                 kk+=k;
-#ifndef EN_UNIFORM_WEIGHT
                 dummy5 = 2*b[2]+k*gridsp[2];
                 dummy9 = a[1]*a[0]*dummy5;
                 dummy11= a[1]*dummy3*dummy5;
                 dummy12= a[0]*dummy4*dummy5;
-#endif
-
-#ifdef EN_UNIFORM_WEIGHT
-                factor = 0.125 * invgridsp * (t2 - t1);
-#else
                 factor = i*j*k*0.125*invgridsp*invgridsp*(dummy1+dummy2+(t2-t1)*dummy6*dummy5+1.333333333333*(t23-t13)
                                                           *(dummy7+dummy8+dummy9)+(t22-t12)*(dummy10+dummy11+dummy12));
-#endif
 
                 *sumfactor=*sumfactor+factor;
                 msmul(stress,factor,gridres);
@@ -504,7 +501,7 @@ void gmxLS_grid_distribute_line_source(matrix * sgrid, rvec a, rvec b, real t1, 
             }
         }
     }
-
+#endif
 }
 
 
@@ -1027,7 +1024,7 @@ void gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, 
     // Vector, we want to solve M*x = b
     real b[nRow3], s[nCol3];
 
-    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enMOP)
+    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enMOP || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -1133,7 +1130,7 @@ void gmxLS_spread_n4(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
     int j;
 
     // If the force decomposition is cCFD or CFD
-    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD)
+    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -1666,7 +1663,7 @@ void gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
     real prod;
 
     // If the force decomposition is cCFD or CFD
-    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD)
+    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -1759,7 +1756,7 @@ void gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         F77_FUNC(dgelsd,DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, work, &lwork, iwork, &info );
 
         //If cCFD project the least squares CFD to the shape space
-        if(grid->fdecomp == encCFD)
+        if(grid->fdecomp == encCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
         {
             //Calculate the normal to the Shape Space
             gmxLS_ShapeSpace5Normal(normAB,normAC,normAD,normAE,normBC,normBD,normBE,normCD,normCE,normDE,CaleyMengerNormal);
