@@ -58,6 +58,8 @@
 #include "mdrun.h"
 #include "localstress.h"
 
+#define EN_HD
+
 /* Find a better place for this? */
 const int cmap_coeff_matrix[] = {
 1, 0, -3,  2, 0, 0,  0,  0, -3,  0,  9, -6,  2,  0, -6,  4 ,
@@ -925,7 +927,11 @@ real angles(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
       
@@ -1038,7 +1044,11 @@ real urey_bradley(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
 
@@ -1179,7 +1189,11 @@ real quartic_angles(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
       
@@ -2512,7 +2526,11 @@ real g96angles(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
 
@@ -2607,7 +2625,11 @@ real cross_bond_bond(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
     
@@ -2712,7 +2734,11 @@ real cross_bond_angle(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
 
@@ -2931,7 +2957,11 @@ real tab_angles(int nbonds,
             lpF[0][0] = f_i[0]; lpF[0][1] = f_i[1]; lpF[0][2] = f_i[2];
             lpF[1][0] = f_j[0]; lpF[1][1] = f_j[1]; lpF[1][2] = f_j[2];
             lpF[2][0] = f_k[0]; lpF[2][1] = f_k[1]; lpF[2][2] = f_k[2];
+#ifdef EN_HD
+            gmxLS_distribute_stress(locals_grid, 6, lpatIDs, lpR, lpF);
+#else
             gmxLS_distribute_stress(locals_grid, 3, lpatIDs, lpR, lpF);
+#endif
         }
         /* end stress tensor */
 
