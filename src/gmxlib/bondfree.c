@@ -58,7 +58,7 @@
 #include "mdrun.h"
 #include "localstress.h"
 
-#define EN_HD
+#define EN_HD // NOTE: enable Hybrid Decomposition (including Force Center Decomposition)
 
 /* Find a better place for this? */
 const int cmap_coeff_matrix[] = {

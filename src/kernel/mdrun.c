@@ -328,7 +328,7 @@ int main(int argc,char *argv[])
     { "-lscont", FALSE, etSTR, {&localsenum},
       "Select which contribution to write to output (default = all): all, vdw, coul, angles, bonds, dihp, dihi, dihrb, lincs, settle, shake, cmap, vel"},
     { "-lsfd", FALSE, etSTR, {&localsfdenum},
-      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), fcd (force center decomposition), hdgm (hybrid decomposition on the global minimum of stress distribution magnitude), hdlm (hybrid decomposition on the local minimum of stress distribution magnitude), gld (Goetz-Lipowsky decomposition), or mop (method of planes)"},
+      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), fcd (force center decomposition), hdgm (hybrid decomposition at the global minimum of stress distribution magnitude), hdlm (hybrid decomposition at the local minimum of stress distribution magnitude), gld (Goetz-Lipowsky decomposition), or mop (method of planes)"},
     { "-lssa", FALSE, etSTR, {&localssanum},
       "Select the type of stress to calculate: spat (spatial stress from IKN theory, default), atom (stress per atom)"},
     { "-rerunvsite", FALSE, etBOOL, {&bRerunVSite},
@@ -437,6 +437,11 @@ int main(int argc,char *argv[])
     printf("\nOption not recognized, will use covariant central force decomposition\n");
     localsfdecomp = encCFD;
   }
+
+  if (localsfdecomp == enFCD || localsfdecomp == enHD_GM || localsfdecomp == enHD_LM) {
+    printf("\nNOTE: FCD or HD is applied only to three body potentials. For four or five body potentials, cCFD is applied.\n");
+  }
+
   printf("\nSelected contribution: %s\n",localsenum);
   if (strncmp(localsenum,"all",5) == 0) {
     printf("\nWill write all contributions to the local stress\n");
