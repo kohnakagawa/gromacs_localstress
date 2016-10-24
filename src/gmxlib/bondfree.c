@@ -1315,7 +1315,12 @@ void do_dih_fup(int i,int j,int k,int l,real ddphi,
         lpF[1][0] = Fj[0];  lpF[1][1] = Fj[1];  lpF[1][2] = Fj[2];
         lpF[2][0] = Fk[0];  lpF[2][1] = Fk[1];  lpF[2][2] = Fk[2];
         lpF[3][0] = f_l[0]; lpF[3][1] = f_l[1]; lpF[3][2] = f_l[2];
+
+#ifdef EN_HD
+        gmxLS_distribute_stress(locals_grid, 7, lpatIDs, lpR, lpF);
+#else
         gmxLS_distribute_stress(locals_grid, 4, lpatIDs, lpR, lpF);
+#endif
         /* end stress tensor */
         
     rvec_inc(fshift[t1],f_i);

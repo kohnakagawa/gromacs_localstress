@@ -107,9 +107,13 @@ void gmxLS_distribute_stress(gmxLS_locals_grid_t * grid, int nAtom, int* atomIDs
 
             // NOTE: To compare with the original implementation implemented
             //       by Torres-Sanchez, et al., we prepare special case.
-            //       6 does not correspond to the number of atoms.
+            //       6 or 7 do not correspond to the number of interacting atoms.
             case 6:
                 gmxLS_spread_n3_HD(grid, F[0], F[1], F[2], R[0], R[1], R[2]);
+                break;
+
+            case 7:
+                gmxLS_spread_n4_HD(grid, F[0], F[1], F[2], F[3], R[0], R[1], R[2], R[3]);
                 break;
 
             default:
@@ -807,6 +811,11 @@ void gmxLS_spread_n3(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         }
 
     }
+    else
+    {
+      fprintf(stderr, "Appropriate force decomposition method is not selected.\n");
+      exit(-1);
+    }
 }
 
 // Hybrid Decomposition for angle potentials
@@ -841,7 +850,7 @@ void gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
 
   // NOTE: In order to verify the original code of CFD,
   //       we also implement CFD.
-  if (grid->fdecomp == encCFD || grid->fdecomp == enCFD) {
+  if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enHD_DIHED) {
     rvec_add(r1, r3, r4);
     svmul(0.5, r4, r4);
   } else if (grid->fdecomp == enFCD) {
@@ -981,6 +990,14 @@ void gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec 
   gmxLS_get_SDM_min(r1, r2, r3, dr12, dr23, -1.0, ret);
 }
 
+void gmxLS_get_CM_pos(const rvec r1, const rvec r2, const rvec r3, const rvec r4, rvec ret)
+{
+  rvec_add(r1, r2, ret);
+  rvec_inc(ret, r3);
+  rvec_inc(ret, r4);
+  svmul(0.25, ret, ret);
+}
+
 void gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret)
 {
   rvec dr21;
@@ -1038,7 +1055,7 @@ void gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, 
     // Vector, we want to solve M*x = b
     real b[nRow3], s[nCol3];
 
-    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enMOP || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
+    if (grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enGLD || grid->fdecomp == enMOP || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM || grid->fdecomp == enHD_DIHED)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -1629,6 +1646,186 @@ void gmxLS_spread_n4(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
                 gmxLS_distribute_interaction(grid, Rcenter1, Rcenter2, Fcenter1,i+1);
         }
     }
+    else
+    {
+      fprintf(stderr, "Appropriate force decomposition method is not selected.\n");
+      exit(-1);
+    }
+}
+
+// Hybrid Decomposition for four-body potentials
+void gmxLS_spread_n4_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, rvec F4, rvec r1, rvec r2, rvec r3, rvec r4)
+{
+    //Counter
+    int i;
+
+    //************************************************************************************
+    // UNIT vectors between particles
+    rvec dr12, dr13, dr14, dr15, dr23, dr24, dr25, dr34, dr35, dr45;
+
+    // position of phantom particle:
+    rvec r5;
+
+    // Distances
+    /* real normAB,normAC,normAD,normAE,normBC,normBD,normBE,normCD,normCE; */
+
+    // (Covariant) Central Force decomposition
+    /* real lab, lac, lad, lae, lbc, lbd, lbe, lcd, lce, lde; */
+
+    rvec Fij;
+    //************************************************************************************
+
+    //Dimension and number of particles
+    /* int nDim = 3; */
+    /* int nPart = 4; */
+
+    //Number of rows and columns
+    int nRow = nRow4_HD, nCol = nCol4_HD, nRHS = 1;
+
+    //************************************************************************************
+    // These are for the LAPACK dgelsd function
+    real wkopt;
+    real* work;
+    int lwork = -1;
+    int iwork[3*nRow4_HD*0+11*nCol4_HD];
+    int info  =  0;
+    int rank;
+    real eps1 = epsLS;
+    //************************************************************************************
+
+    real M[nRow4_HD*nCol4_HD] = {0.0};
+    real b[nRow4_HD] = {0.0}, s[nCol4_HD] = {0.0};
+
+    rvec_sub(r2, r1, dr12);
+    rvec_sub(r3, r1, dr13);
+    rvec_sub(r4, r1, dr14);
+    rvec_sub(r3, r2, dr23);
+    rvec_sub(r4, r2, dr24);
+    rvec_sub(r4, r3, dr34);
+
+    gmxLS_get_CM_pos(r1, r2, r3, r4, r5);
+
+    if (grid->fdecomp == enHD_DIHED) {
+      rvec_sub(r5, r1, dr15);
+      rvec_sub(r5, r2, dr25);
+      rvec_sub(r5, r3, dr35);
+      rvec_sub(r5, r4, dr45);
+
+      //Force on particle 1:
+      M[nRow * 0 + 0] = -dr12[0]; M[nRow * 1 + 0] = -dr13[0];
+      M[nRow * 0 + 1] = -dr12[1]; M[nRow * 1 + 1] = -dr13[1];
+      M[nRow * 0 + 2] = -dr12[2]; M[nRow * 1 + 2] = -dr13[2];
+      M[nRow * 2 + 0] = -dr14[0]; M[nRow * 3 + 0] = -dr15[0];
+      M[nRow * 2 + 1] = -dr14[1]; M[nRow * 3 + 1] = -dr15[1];
+      M[nRow * 2 + 2] = -dr14[2]; M[nRow * 3 + 2] = -dr15[2];
+      b[0] = F1[0]; b[1] = F1[1]; b[2] = F1[2];
+
+      //Force on particle 2:
+      M[nRow * 0 + 3] = dr12[0]; M[nRow * 4 + 3] = -dr23[0];
+      M[nRow * 0 + 4] = dr12[1]; M[nRow * 4 + 4] = -dr23[1];
+      M[nRow * 0 + 5] = dr12[2]; M[nRow * 4 + 5] = -dr23[2];
+      M[nRow * 5 + 3] = -dr24[0]; M[nRow * 6 + 3] = -dr25[0];
+      M[nRow * 5 + 4] = -dr24[1]; M[nRow * 6 + 4] = -dr25[1];
+      M[nRow * 5 + 5] = -dr24[2]; M[nRow * 6 + 5] = -dr25[2];
+      b[3] = F2[0]; b[4] = F2[1]; b[5] = F2[2];
+
+      //Force on particle 3:
+      M[nRow * 1 + 6] = dr13[0]; M[nRow * 4 + 6] = dr23[0];
+      M[nRow * 1 + 7] = dr13[1]; M[nRow * 4 + 7] = dr23[1];
+      M[nRow * 1 + 8] = dr13[2]; M[nRow * 4 + 8] = dr23[2];
+      M[nRow * 7 + 6] = -dr34[0]; M[nRow * 8 + 6] = -dr35[0];
+      M[nRow * 7 + 7] = -dr34[1]; M[nRow * 8 + 7] = -dr35[1];
+      M[nRow * 7 + 8] = -dr34[2]; M[nRow * 8 + 8] = -dr35[2];
+      b[6] = F3[0]; b[7] = F3[1]; b[8] = F3[2];
+
+      //Force on particle 4:
+      M[nRow * 2 + 9 ] = dr14[0]; M[nRow * 5 + 9 ] = dr24[0];
+      M[nRow * 2 + 10] = dr14[1]; M[nRow * 5 + 10] = dr24[1];
+      M[nRow * 2 + 11] = dr14[2]; M[nRow * 5 + 11] = dr24[2];
+      M[nRow * 7 + 9 ] = dr34[0]; M[nRow * 9 + 9 ] = -dr45[0];
+      M[nRow * 7 + 10] = dr34[1]; M[nRow * 9 + 10] = -dr45[1];
+      M[nRow * 7 + 11] = dr34[2]; M[nRow * 9 + 11] = -dr45[2];
+      b[9] = F4[0]; b[10] = F4[1]; b[11] = F4[2];
+
+      //Force on phantom particle:
+      M[nRow * 3 + 12] = dr15[0]; M[nRow * 6 + 12] = dr25[0];
+      M[nRow * 3 + 13] = dr15[1]; M[nRow * 6 + 13] = dr25[1];
+      M[nRow * 3 + 14] = dr15[2]; M[nRow * 6 + 14] = dr25[2];
+      M[nRow * 8 + 12] = dr35[0]; M[nRow * 9 + 12] = dr45[0];
+      M[nRow * 8 + 13] = dr35[1]; M[nRow * 9 + 13] = dr45[1];
+      M[nRow * 8 + 14] = dr35[2]; M[nRow * 9 + 14] = dr45[2];
+      b[12] = 0.0; b[13] = 0.0; b[14] = 0.0;
+
+      /* Query and allocate the optimal workspace */
+      lwork = -1;
+      F77_FUNC(dgelsd,DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, &wkopt, &lwork, iwork, &info );
+      lwork = (int)wkopt;
+      work = (real*) malloc( lwork*sizeof(real) );
+      /* Solve the equations A*X = B */
+      // Least-Squares solution to the system
+      F77_FUNC(dgelsd,DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, work, &lwork, iwork, &info );
+
+      Fij[0] = b[0] * (-dr12[0]); Fij[1] = b[0] * (-dr12[1]); Fij[2] = b[0] * (-dr12[2]);
+      gmxLS_distribute_interaction(grid, r1, r2, Fij, 0);
+      Fij[0] = b[1] * (-dr13[0]); Fij[1] = b[1] * (-dr13[1]); Fij[2] = b[1] * (-dr13[2]);
+      gmxLS_distribute_interaction(grid, r1, r3, Fij, 0);
+      Fij[0] = b[2] * (-dr14[0]); Fij[1] = b[2] * (-dr14[1]); Fij[2] = b[2] * (-dr14[2]);
+      gmxLS_distribute_interaction(grid, r1, r4, Fij, 0);
+      Fij[0] = b[3] * (-dr15[0]); Fij[1] = b[3] * (-dr15[1]); Fij[2] = b[3] * (-dr15[2]);
+      gmxLS_distribute_interaction(grid, r1, r5, Fij, 0);
+      Fij[0] = b[4] * (-dr23[0]); Fij[1] = b[4] * (-dr23[1]); Fij[2] = b[4] * (-dr23[2]);
+      gmxLS_distribute_interaction(grid, r2, r3, Fij, 0);
+      Fij[0] = b[5] * (-dr24[0]); Fij[1] = b[5] * (-dr24[1]); Fij[2] = b[5] * (-dr24[2]);
+      gmxLS_distribute_interaction(grid, r2, r4, Fij, 0);
+      Fij[0] = b[6] * (-dr25[0]); Fij[1] = b[6] * (-dr25[1]); Fij[2] = b[6] * (-dr25[2]);
+      gmxLS_distribute_interaction(grid, r2, r5, Fij, 0);
+      Fij[0] = b[7] * (-dr34[0]); Fij[1] = b[7] * (-dr34[1]); Fij[2] = b[7] * (-dr34[2]);
+      gmxLS_distribute_interaction(grid, r3, r4, Fij, 0);
+      Fij[0] = b[8] * (-dr35[0]); Fij[1] = b[8] * (-dr35[1]); Fij[2] = b[8] * (-dr35[2]);
+      gmxLS_distribute_interaction(grid, r3, r5, Fij, 0);
+      Fij[0] = b[9] * (-dr45[0]); Fij[1] = b[9] * (-dr45[1]); Fij[2] = b[9] * (-dr45[2]);
+      gmxLS_distribute_interaction(grid, r4, r5, Fij, 0);
+
+      // test
+      /*rvec Fd_sum, error_vec;
+      // F1
+      Fd_sum[0] = b[0] * (-dr12[0]) + b[1] * (-dr13[0]) + b[2] * (-dr14[0]) + b[3] * (-dr15[0]);
+      Fd_sum[1] = b[0] * (-dr12[1]) + b[1] * (-dr13[1]) + b[2] * (-dr14[1]) + b[3] * (-dr15[1]);
+      Fd_sum[2] = b[0] * (-dr12[2]) + b[1] * (-dr13[2]) + b[2] * (-dr14[2]) + b[3] * (-dr15[2]);
+      rvec_sub(Fd_sum, F1, error_vec);
+      fprintf(stderr, "F1 %g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+      // F2
+      Fd_sum[0] = b[0] * dr12[0] + b[4] * (-dr23[0]) + b[5] * (-dr24[0]) + b[6] * (-dr25[0]);
+      Fd_sum[1] = b[0] * dr12[1] + b[4] * (-dr23[1]) + b[5] * (-dr24[1]) + b[6] * (-dr25[1]);
+      Fd_sum[2] = b[0] * dr12[2] + b[4] * (-dr23[2]) + b[5] * (-dr24[2]) + b[6] * (-dr25[2]);
+      rvec_sub(Fd_sum, F2, error_vec);
+      fprintf(stderr, "F2 %g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+      // F3
+      Fd_sum[0] = b[1] * dr13[0] + b[4] * dr23[0] + b[7] * (-dr34[0]) + b[8] * (-dr35[0]);
+      Fd_sum[1] = b[1] * dr13[1] + b[4] * dr23[1] + b[7] * (-dr34[1]) + b[8] * (-dr35[1]);
+      Fd_sum[2] = b[1] * dr13[2] + b[4] * dr23[2] + b[7] * (-dr34[2]) + b[8] * (-dr35[2]);
+      rvec_sub(Fd_sum, F3, error_vec);
+      fprintf(stderr, "F3 %g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+      // F4
+      Fd_sum[0] = b[2] * dr14[0] + b[5] * dr24[0] + b[7] * dr34[0] + b[9] * (-dr45[0]);
+      Fd_sum[1] = b[2] * dr14[1] + b[5] * dr24[1] + b[7] * dr34[1] + b[9] * (-dr45[1]);
+      Fd_sum[2] = b[2] * dr14[2] + b[5] * dr24[2] + b[7] * dr34[2] + b[9] * (-dr45[2]);
+      rvec_sub(Fd_sum, F4, error_vec);
+      fprintf(stderr, "F4 %g %g %g\n", error_vec[0], error_vec[1], error_vec[2]);
+
+      // F5
+      Fd_sum[0] = b[3] * dr15[0] + b[6] * dr25[0] + b[8] * dr35[0] + b[9] * dr45[0];
+      Fd_sum[1] = b[3] * dr15[1] + b[6] * dr25[1] + b[8] * dr35[1] + b[9] * dr45[1];
+      Fd_sum[2] = b[3] * dr15[2] + b[6] * dr25[2] + b[8] * dr35[2] + b[9] * dr45[2];
+      fprintf(stderr, "F5 %g %g %g\n", Fd_sum[0], Fd_sum[1], Fd_sum[2]);*/
+
+      free(work);
+    } else {
+      fprintf(stderr, "You should not call this gmxLS_spread_n4_HD when specifying enHD_DIHED.\n");
+    }
 }
 
 
@@ -1677,7 +1874,7 @@ void gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
     real prod;
 
     // If the force decomposition is cCFD or CFD
-    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
+    if(grid->fdecomp == encCFD || grid->fdecomp == enCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM || grid->fdecomp == enHD_DIHED)
     {
         rvec_sub(Rb, Ra, AB);
         rvec_sub(Rc, Ra, AC);
@@ -1770,7 +1967,7 @@ void gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec
         F77_FUNC(dgelsd,DGELSD)(&nRow, &nCol, &nRHS, M, &nRow, b, &nRow, s, &eps1, &rank, work, &lwork, iwork, &info );
 
         //If cCFD project the least squares CFD to the shape space
-        if(grid->fdecomp == encCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM)
+        if(grid->fdecomp == encCFD || grid->fdecomp == enFCD || grid->fdecomp == enHD_GM || grid->fdecomp == enHD_LM || grid->fdecomp == enHD_DIHED)
         {
             //Calculate the normal to the Shape Space
             gmxLS_ShapeSpace5Normal(normAB,normAC,normAD,normAE,normBC,normBD,normBE,normCD,normCE,normDE,CaleyMengerNormal);

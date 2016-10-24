@@ -328,7 +328,7 @@ int main(int argc,char *argv[])
     { "-lscont", FALSE, etSTR, {&localsenum},
       "Select which contribution to write to output (default = all): all, vdw, coul, angles, bonds, dihp, dihi, dihrb, lincs, settle, shake, cmap, vel"},
     { "-lsfd", FALSE, etSTR, {&localsfdenum},
-      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), fcd (force center decomposition), hdgm (hybrid decomposition at the global minimum of stress distribution magnitude), hdlm (hybrid decomposition at the local minimum of stress distribution magnitude), gld (Goetz-Lipowsky decomposition), or mop (method of planes)"},
+      "Select the type of force decomposition to be used: ccfd (covariant central force decomposition, default), ncfd (non-covariant central force decomposition), fcd (force center decomposition), hdgm (hybrid decomposition at the global minimum of stress distribution magnitude), hdlm (hybrid decomposition at the local minimum of stress distribution magnitude), hddh (hybrid decomposition for dihedral potentials) gld (Goetz-Lipowsky decomposition), or mop (method of planes)"},
     { "-lssa", FALSE, etSTR, {&localssanum},
       "Select the type of stress to calculate: spat (spatial stress from IKN theory, default), atom (stress per atom)"},
     { "-rerunvsite", FALSE, etBOOL, {&bRerunVSite},
@@ -433,6 +433,9 @@ int main(int argc,char *argv[])
   }else if(strncmp(localsfdenum,"hdlm",4) == 0){
     localsfdecomp = enHD_LM;
     printf("\nSelected force decomposition: %s\n", localsfdenum);
+  }else if(strncmp(localsfdenum,"hddh",4) == 0){
+    localsfdecomp = enHD_DIHED;
+    printf("\nSelected force decomposition: %s\n", localsfdenum);
   }else{
     printf("\nOption not recognized, will use covariant central force decomposition\n");
     localsfdecomp = encCFD;
@@ -440,6 +443,10 @@ int main(int argc,char *argv[])
 
   if (localsfdecomp == enFCD || localsfdecomp == enHD_GM || localsfdecomp == enHD_LM) {
     printf("\nNOTE: FCD or HD is applied only to three body potentials. For four or five body potentials, cCFD is applied.\n");
+  }
+
+  if (localsfdecomp == enHD_DIHED) {
+      printf("\nNOTE: Hybrid decomposition is employed only to four body potentials. For three or five body potentials, cCFD is applied.\n");
   }
 
   printf("\nSelected contribution: %s\n",localsenum);

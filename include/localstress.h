@@ -57,6 +57,7 @@
 #define enFCD       4
 #define enHD_GM     5
 #define enHD_LM     6
+#define enHD_DIHED  7
 
 #define enSL        0
 #define enAll       1
@@ -82,6 +83,9 @@
 
 #define nRow4       12
 #define nCol4       6
+
+#define nRow4_HD    15
+#define nCol4_HD    10
 
 #define nRow5       15
 #define nCol5       10
@@ -202,6 +206,7 @@ void   gmxLS_spread_n3_HD(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc,
 void   gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, const real sign, rvec ret);
 void   gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
 void   gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
+void   gmxLS_get_CM_pos(const rvec r1, const rvec r2, const rvec r3, const rvec r4, rvec ret);
 void   gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret);
 
 // Decompose Settle
@@ -209,6 +214,7 @@ void   gmxLS_spread_settle(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc
 
 // Decompose 4-body potentials (dihedrals)
 void   gmxLS_spread_n4(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Fd, rvec Ra, rvec Rb, rvec Rc, rvec Rd);
+void gmxLS_spread_n4_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, rvec F4, rvec r1, rvec r2, rvec r3, rvec r4);
 
 // Decompose 5-body potentials (CMAP)
 void   gmxLS_spread_n5(gmxLS_locals_grid_t * grid, rvec Fa, rvec Fb, rvec Fc, rvec Fd, rvec Fe, rvec Ra, rvec Rb, rvec Rc, rvec Rd, rvec Re);
