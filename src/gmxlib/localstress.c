@@ -1824,7 +1824,12 @@ void gmxLS_spread_n4_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
 
       free(work);
     } else {
-      fprintf(stderr, "You should not call this gmxLS_spread_n4_HD when specifying enHD_DIHED.\n");
+      static int first_call = 1;
+      if (first_call) {
+        fprintf(stderr, "You should not call this gmxLS_spread_n4_HD when specifying enHD_DIHED.\n");
+        first_call = 0;
+      }
+      gmxLS_spread_n4(grid, F1, F2, F3, F4, r1, r2, r3, r4);
     }
 }
 
