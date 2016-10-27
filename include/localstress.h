@@ -207,6 +207,7 @@ void   gmxLS_get_SDM_min(const rvec r1, const rvec r2, const rvec r3, const rvec
 void   gmxLS_get_SDM_gmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
 void   gmxLS_get_SDM_lmin(const rvec r1, const rvec r2, const rvec r3, const rvec r12, const rvec r23, rvec ret);
 void   gmxLS_get_CM_pos(const rvec r1, const rvec r2, const rvec r3, const rvec r4, rvec ret);
+void   gmxLS_get_outside_tetrahed(const rvec r1, const rvec r2, const rvec r3, const rvec r4, rvec ret);
 void   gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret);
 
 // Decompose Settle

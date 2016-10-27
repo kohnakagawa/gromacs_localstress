@@ -998,6 +998,23 @@ void gmxLS_get_CM_pos(const rvec r1, const rvec r2, const rvec r3, const rvec r4
   svmul(0.25, ret, ret);
 }
 
+void gmxLS_get_outside_tetrahed(const rvec r1, const rvec r2, const rvec r3, const rvec r4, rvec ret)
+{
+  rvec cm_pos_tet; // (r1 + r2 + r3 + r4) / 4
+  rvec cm_pos_tri; // (r1 + r3 + r4) / 3
+  rvec cent_to_surf;
+
+  gmxLS_get_CM_pos(r1, r2, r3, r4, cm_pos_tet);
+
+  rvec_add(r1, r3, cm_pos_tri);
+  rvec_inc(cm_pos_tri, r4);
+  svmul(1.0 / 3.0, cm_pos_tri, cm_pos_tri);
+
+  rvec_sub(cm_pos_tri, cm_pos_tet, cent_to_surf);
+  svmul(2.0, cent_to_surf, cent_to_surf);
+  rvec_add(cm_pos_tet, cent_to_surf, ret);
+}
+
 void gmxLS_get_OFC(const rvec r1, const rvec r2, const rvec dr12, const rvec F2, rvec ret)
 {
   rvec dr21;
@@ -1703,7 +1720,8 @@ void gmxLS_spread_n4_HD(gmxLS_locals_grid_t * grid, rvec F1, rvec F2, rvec F3, r
     rvec_sub(r4, r2, dr24);
     rvec_sub(r4, r3, dr34);
 
-    gmxLS_get_CM_pos(r1, r2, r3, r4, r5);
+    /* gmxLS_get_CM_pos(r1, r2, r3, r4, r5); */
+    gmxLS_get_outside_tetrahed(r1, r2, r3, r4, r5);
 
     if (grid->fdecomp == enHD_DIHED) {
       rvec_sub(r5, r1, dr15);
